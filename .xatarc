@@ -1,5 +1,5 @@
 {
-  "databaseURL": "https://www.cuevantn-com-Website-juddqh.us-east-1.xata.sh/db/content",
+  "databaseURL": "https://cuevantn-com-Website-juddqh.us-east-1.xata.sh/db/content",
   "codegen": {
     "output": "xata/source.ts"
   }

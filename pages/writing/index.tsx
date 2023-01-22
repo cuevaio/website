@@ -28,7 +28,7 @@ const WritingPage = () => {
           ],
         }}
       />
-      <main className="w-160 mt-4 mx-auto">
+      <main className="mt-4 col-start-2 col-end-3 ">
         <h1 className="text-xl font-medium my-4">Writing</h1>
         <div className="space-y-4">
           {posts.map((post) => (

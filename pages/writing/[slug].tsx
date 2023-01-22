@@ -100,7 +100,7 @@ export default function PostPage({
         <meta name="twitter:image" content={ogImage} />
       </Head>
 
-      <div className="xl:!col-end-5">
+      <div>
         <h1 className="text-2xl font-medium text-neutral-100/90 sm:text-3xl">
           {post.title}
         </h1>

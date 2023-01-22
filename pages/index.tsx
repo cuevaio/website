@@ -9,7 +9,7 @@ const Home = () => {
   return (
     <>
       <NextSeo noindex={true} {...seo} />
-      <main className="w-160 mx-auto py-16">
+      <main className="col-start-2 col-end-3 py-16">
         <div className="flex space-x-8 mb-4">
           <ProfileImage size="large" />
 
@@ -27,7 +27,7 @@ const Home = () => {
 
         <div className="flex justify-between items-center sticky top-0 bg-neutral-900 py-2">
           <Navbar />
-          <h1>
+          <h1 className="hidden sm:flex">
             <span className="opacity-80">cuev</span>
             <span className="opacity-50">antn</span>
           </h1>

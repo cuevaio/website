@@ -51,6 +51,7 @@ const Navbar: FunctionComponent<NavbarProps> = () => {
           active={path.startsWith("/cv")}
         />
       </Link>
+      <div className="hidden sm:flex">
       <Separator.Root
         className="w-[1px] h-[12px] bg-neutral-700 my-auto"
         decorative
@@ -61,7 +62,7 @@ const Navbar: FunctionComponent<NavbarProps> = () => {
       </a>
       <a href="https://twitter.com/cuevantn" target="_blank">
         <NavbarButton icon={<TwitterLogoIcon />} toolTip="Twitter" />
-      </a>
+      </a></div>
     </nav>
   )
 }

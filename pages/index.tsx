@@ -10,7 +10,7 @@ const Home = () => {
     <>
       <NextSeo noindex={true} {...seo} />
       <main className="col-start-2 col-end-3 py-16">
-        <div className="flex space-x-8 mb-4">
+        <div className="flex space-x-8 mb-4 items-center">
           <ProfileImage size="large" />
 
           <div className="my-auto">

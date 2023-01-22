@@ -4,49 +4,39 @@ import Link from "next/link"
 
 export const Footer = () => {
   return (
-    <div className="col-start-3 col-end-4 mt-36 pb-36 text-base">
-      <div className="text-gray-500">
-        <div className="flex flex-col justify-between font-medium lg:flex-row">
-          <div className="flex space-x-5">
-            <div>
-              <Link
-                href="/writing"
-                className={cx(LINK_SUBTLE_STYLES, FOCUS_VISIBLE_OUTLINE)}
-              >
-                Writing
-              </Link>
-            </div>
-            <div>
-              <Link
-                href="/projects"
-                className={cx(LINK_SUBTLE_STYLES, FOCUS_VISIBLE_OUTLINE)}
-              >
-                Projects
-              </Link>
-            </div>
-            <div>
-              <Link
-                href="/cv"
-                className={cx(LINK_SUBTLE_STYLES, FOCUS_VISIBLE_OUTLINE)}
-              >
-                CV
-              </Link>
-            </div>
+    <div className="col-start-1 col-end-2  sm:col-start-2 sm:col-end-3 mt-36 pb-36 text-base">
+      <div className="flex flex-col justify-between font-medium lg:flex-row text-gray-500">
+        <Link
+          href="/writing"
+          className={cx(LINK_SUBTLE_STYLES, FOCUS_VISIBLE_OUTLINE)}
+        >
+          Writing
+        </Link>
+        <Link
+          href="/projects"
+          className={cx(LINK_SUBTLE_STYLES, FOCUS_VISIBLE_OUTLINE)}
+        >
+          Projects
+        </Link>
+        <Link
+          href="/cv"
+          className={cx(LINK_SUBTLE_STYLES, FOCUS_VISIBLE_OUTLINE)}
+        >
+          CV
+        </Link>
 
-            <a
-              href="https://github.com/cuevantn"
-              className={cx(LINK_SUBTLE_STYLES, FOCUS_VISIBLE_OUTLINE)}
-            >
-              GitHub
-            </a>
-            <a
-              href="https://twitter.com/cuevantn"
-              className={cx(LINK_SUBTLE_STYLES, FOCUS_VISIBLE_OUTLINE)}
-            >
-              Twitter
-            </a>
-          </div>
-        </div>
+        <a
+          href="https://github.com/cuevantn"
+          className={cx(LINK_SUBTLE_STYLES, FOCUS_VISIBLE_OUTLINE)}
+        >
+          GitHub
+        </a>
+        <a
+          href="https://twitter.com/cuevantn"
+          className={cx(LINK_SUBTLE_STYLES, FOCUS_VISIBLE_OUTLINE)}
+        >
+          Twitter
+        </a>
       </div>
 
       <p className="mt-8 text-gray-600">

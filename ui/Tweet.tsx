@@ -1,6 +1,6 @@
 import type { FormattedTweet } from "@/lib/twitter"
 import { BlurImage } from "@/ui/BlurImage"
-import TwitterIcon from "@/ui/TwitterIcon"
+import { TwitterLogoIcon } from "@radix-ui/react-icons"
 import Image from "next/image"
 /**
  * Supports plain text, quote tweets.
@@ -76,7 +76,7 @@ export const Tweet = ({
             href={tweetUrl}
             className="ml-auto mt-1 block pl-2 text-blue-400/90 hover:text-blue-500"
           >
-            <TwitterIcon className="w-5" />
+            <TwitterLogoIcon className="w-5" />
           </a>
         ) : null}
       </div>

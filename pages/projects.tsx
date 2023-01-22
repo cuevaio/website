@@ -6,14 +6,14 @@ const ProjectsPage = () => {
       <NextSeo
         title="Projects"
         description="Projects"
-        canonical="https://cuevantn.com/projects"
+        canonical="https://www.cuevantn.com/projects"
         openGraph={{
-          url: "https://cuevantn.com/projects",
+          url: "https://www.cuevantn.com/projects",
           title: "Projects",
           description: "Projects",
           images: [
             {
-              url: "https://cuevantn.com/og-images/projects.png",
+              url: "https://www.cuevantn.com/og-images/projects.png",
               width: 1200,
               height: 630,
               alt: "Projects",

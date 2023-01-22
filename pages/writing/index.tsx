@@ -10,24 +10,7 @@ const WritingPage = () => {
   )
   return (
     <>
-      <NextSeo
-        title="CV"
-        description="My CV"
-        canonical="https://cuevantn.com/CV"
-        openGraph={{
-          url: "https://cuevantn.com/cv",
-          title: "Projects",
-          description: "Projects",
-          images: [
-            {
-              url: "https://cuevantn.com/og-images/projects.png",
-              width: 1200,
-              height: 630,
-              alt: "Projects",
-            },
-          ],
-        }}
-      />
+      <NextSeo />
       <main className="mt-4 col-start-2 col-end-3 ">
         <h1 className="text-xl font-medium my-4">Writing</h1>
         <div className="space-y-4">

@@ -64,7 +64,7 @@ export default function PostPage({
 
   const path = `/writing/${post.slug}`
 
-  const url = `https://cuevantn.com${path}`
+  const url = `https://www.cuevantn.com${path}`
   const title = `${post.title} | cuevantn.com`
   const ogImage = createOgImage({
     title: post.title,

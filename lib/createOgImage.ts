@@ -10,7 +10,7 @@ export const createOgImage = ({
 }) =>
   [
     // ACCOUNT PREFIX
-    `https://res.cloudinary.com/cuevantn/image/upload`,
+    `https://res.cloudinary.com/delba/image/upload`,
     // Composed Image Transformations
     `w_1600,h_836,q_100`,
 

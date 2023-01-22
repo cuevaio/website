@@ -3,7 +3,7 @@ import type { DefaultSeoProps } from "next-seo"
 
 const title = `Anthony Cueva`
 const description = `Self-taught, quick learner, and passionate about creating exceptional user experiences. Here I share my knowledge and expertise on delivering outstanding products, improving as a developer, and thriving in the tech field.`
-const domain = `cuevantn.com`
+const domain = `www.cuevantn.com`
 const twitter = `@cuevantn`
 const meta = `Frontend Engineer`
 
@@ -26,6 +26,7 @@ export const seo: DefaultSeoProps = {
   },
   twitter: {
     handle: twitter,
+    site: `https://${domain}`,
     cardType: "summary_large_image",
   },
 }

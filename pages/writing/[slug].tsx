@@ -1,3 +1,4 @@
+import Head from "next/head"
 import { getPartialPost } from "@/lib/contentlayer"
 import { createOgImage } from "@/lib/createOgImage"
 import { FormattedTweet, getTweets } from "@/lib/twitter"
@@ -67,7 +68,7 @@ export default function PostPage({
   const title = `${post.title} | cuevantn.com`
   const ogImage = createOgImage({
     title: post.title,
-    meta: "cuevantn.com · " + post.publishedAtFormatted,
+    meta: "Anthony Cueva · " + post.publishedAtFormatted,
   })
 
   return (
@@ -90,6 +91,14 @@ export default function PostPage({
           ],
         }}
       />
+      <Head>
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@vercel" />
+        <meta name="twitter:creator" content="@cuevantn" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={post.description ?? undefined} />
+        <meta name="twitter:image" content={ogImage} />
+      </Head>
 
       <div className="xl:!col-end-5">
         <h1 className="text-2xl font-medium text-neutral-100/90 sm:text-3xl">

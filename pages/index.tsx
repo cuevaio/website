@@ -21,8 +21,8 @@ const Home = () => {
           </div>
         </div>
 
-        <p className="mt-7 text-xl text-neutral-100/90 sm:mt-9">
-          {seo.description}
+        <p className="mt-7 text-lg sm:mt-9">
+          Self-taught, quick learner, and passionate about creating exceptional user experiences.
         </p>
 
         <div className="flex justify-between items-center sticky top-0 bg-neutral-900 py-2">
@@ -33,7 +33,7 @@ const Home = () => {
           </h1>
         </div>
 
-        <div className="flex flex-col space-y-6 mt-8">
+        <div className="flex flex-col text-lg space-y-6 mt-8">
           <p>
             I'm a web developer based in Peru. I'm interested in web frameworks,
             user/dev experience, and serverless databases.

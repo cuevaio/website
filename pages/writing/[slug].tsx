@@ -128,6 +128,7 @@ export default function PostPage({
                         {
                           "pl-2": heading.heading === 2,
                           "pl-4": heading.heading === 3,
+                          "pl-6": heading.heading === 4,
                         },
                       )}
                     >

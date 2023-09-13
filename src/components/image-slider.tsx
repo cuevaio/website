@@ -22,9 +22,8 @@ const ImageSlider = ({ images, className, ...props }: ImageSliderProps) => {
         {...props}
       >
         {images.map((image, i) => (
-          <div className="h-full min-w-max relative">
+          <div className="h-full min-w-max relative" key={i}>
             <Image
-              key={i}
               src={image.src}
               alt={image.alt}
               className={cn("rounded-lg h-full w-full")}

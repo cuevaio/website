@@ -1,0 +1,115 @@
+import Image from "next/image";
+
+import home_img from "./assets/home.png";
+import create_img from "./assets/create.png";
+import search_img from "./assets/search.png";
+import profile_img from "./assets/profile.png";
+import following_img from "./assets/following.png";
+import light_img from "./assets/light.png";
+import desktop_img from "./assets/desktop.png";
+
+import { Button } from "@/components/ui/button";
+import { ImageSlider } from "@/components/image-slider";
+
+export const metadata = {
+  title: "Classhub, a social network for students",
+  description: `Here I show you the project I made for my final degree project. 
+    It is a social network for students, where they can share their notes, doubts, etc. 
+    It is made with React, Redux, NodeJS, Express, MongoDB, Socket.io, etc.`,
+};
+
+*Updated for the last time on September 13, 2023*
+
+# Classhub
+
+A social network for students
+
+As a college student, I have always had the need to share information with my classmates. Sometimes, there are important things every college student should know, like the date of an exam, the deadline of a project, etc.
+
+## A social network for students
+
+I'm actively working on Classhub, a social network exclusively for students. At registration, the user must enter a valid university email address. This way, we can ensure that only students can register.
+
+## Features
+
+<ImageSlider
+  images={[
+    {
+      src: home_img,
+      alt: "Home",
+      screen: "mobile",
+    },
+    {
+      src: create_img,
+      alt: "Create",
+      screen: "mobile",
+    },
+    {
+      src: search_img,
+      alt: "Search",
+      screen: "mobile",
+    },
+    {
+      src: profile_img,
+      alt: "Profile",
+      screen: "mobile",
+    },
+    {
+      src: following_img,
+      alt: "Following",
+      screen: "mobile",
+    },
+    {
+      src: light_img,
+      alt: "Light",
+      screen: "mobile",
+    },
+    {
+      src: desktop_img,
+      alt: "Desktop",
+      screen: "desktop",
+    },
+  ]}
+  className="mb-4"
+/>
+
+- [x] **Create posts**: You can create posts with images, text, and code snippets.
+- [x] **Search**: You can search for posts by title, content, or tags.
+
+## How it works
+
+it's so cool `hello()`
+
+```ts showLineNumbers title="src/pages/api/posts/[id]/images.ts"  {6-10, 13}
+let images = [];
+
+let i = 0;
+while (true) {
+  let file = form_data.get(`file-${i}`);
+  let alt = form_data.get(`alt-${i}`);
+
+  if (!file) {
+    break;
+  }
+
+  file = file as File;
+
+  let fileName: string = file.name;
+  let mimeType = file.type;
+  let fileData = Buffer.from(await file.arrayBuffer());
+
+  images.push({
+    alt: alt ? alt.toString() : null,
+    file: {
+      name: fileName,
+      mediaType: mimeType,
+      base64Content: fileData.toString("base64"),
+    },
+    status: newStatus.id,
+  });
+
+  i++;
+}
+
+await xata.db.image.create(images);
+```

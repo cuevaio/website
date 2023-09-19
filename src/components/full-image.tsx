@@ -35,8 +35,7 @@ const FullImage = ({
         )}
         {...imageProps}
       />
-      <Link
-        href={typeof src === "string" ? src : (src as StaticImageData).src}
+      <div
         style={
           lightSrc
             ? {
@@ -47,7 +46,11 @@ const FullImage = ({
               }
             : {}
         }
-        className="rounded-lg dark:opacity-0 bg-transparent absolute top-4 bottom-4 left-4 right-4 text-sm text-neutral-900 hover:text-neutral-100"
+        className="dark:opacity-0 opacity-100 absolute rounded-lg top-4 bottom-4 left-4 right-4"
+      />
+      <Link
+        href={typeof src === "string" ? src : (src as StaticImageData).src}
+        className="absolute top-4 bottom-4 left-4 right-4"
       />
     </div>
   );

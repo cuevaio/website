@@ -1,0 +1,21 @@
+import info from "./info.json";
+
+export const metadata = {
+  ...info,
+};
+
+import { FullImage } from "@/components/full-image";
+
+import cat_dark from "./assets/cat-dark.avif";
+import cat_light from "./assets/cat-light.webp";
+import cat_light_2 from "./assets/cat-light-2.jpg";
+
+# Let's build this
+
+<FullImage
+  image={{
+    src: cat_light,
+    alt: "Upload image process",
+  }}
+  lightSrc={cat_light_2}
+/>

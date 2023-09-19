@@ -32,7 +32,7 @@ const Navbar: FunctionComponent<NavbarProps> = () => {
               active={path === "/"}
             />
           </Link>
-          <Link href="/">
+          <Link href="/writing">
             <NavbarButton
               icon={<FileTextIcon />}
               toolTip="Writing"

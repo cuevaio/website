@@ -9,7 +9,10 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h1: ({ children, className, ...props }) => (
       <h1
         {...props}
-        className={cn(className, "text-primary text-4xl sm:text-5xl font-bold pt-16 mb-6")}
+        className={cn(
+          className,
+          "text-primary text-4xl sm:text-5xl font-bold grow pt-16 mb-6 mr-24"
+        )}
       >
         {children}
       </h1>
@@ -28,7 +31,10 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
 
     p: ({ children, className, ...props }) => (
-      <p {...props} className={cn("mb-6 text-md sm:text-lg leading-7", className)}>
+      <p
+        {...props}
+        className={cn("mb-6 text-md sm:text-lg leading-7", className)}
+      >
         {children}
       </p>
     ),

@@ -1,17 +1,19 @@
-import Image from "next/image";
+import landing_img from "./assets/landing.png";
+import pic_input_img from "./assets/pic-input.png";
+import pic_choosen_img from "./assets/pic-choosen.png";
+import pic_processing_img from "./assets/pic-processing.png";
+import context_input_img from "./assets/context-input.png";
+import context_input_completed_img from "./assets/context-input-completed.png";
+import processing_img from "./assets/processing.png";
+import finished_img from "./assets/finished.png";
 
-import home_img from "./assets/home.png";
-import create_img from "./assets/create.png";
-import search_img from "./assets/search.png";
-import profile_img from "./assets/profile.png";
-import following_img from "./assets/following.png";
-import light_img from "./assets/light.png";
-import desktop_img from "./assets/desktop.png";
+import upload_process_dark_img from "./assets/upload-process-dark.png";
+import upload_process_light_img from "./assets/upload-process-light.png";
 
 import { Button } from "@/components/ui/button";
 import { ImageGallery } from "@/components/image-gallery";
 import { ViewAppButton } from "@/components/view-app-button";
-
+import { FullImage } from "@/components/full-image";
 
 export const metadata = {
   title: "Classhub, a social network for students",
@@ -20,58 +22,59 @@ export const metadata = {
     It is made with React, Redux, NodeJS, Express, MongoDB, Socket.io, etc.`,
 };
 
+# GreatPics
 
-# Classhub, a social network for students
+<ViewAppButton href="https://www.greatpics.app/" />
 
-<ViewAppButton href="https://theclasshub.vercel.app/" />
+Great pics is a web applcation that uses AI to generate alt text for your pictures. It's build using Next.js, OpenAI, Xata, UploadThing, Upstash, and Tailwind CSS.
 
+## How it works
 
-A social network for students
-
-As a college student, I have always had the need to share information with my classmates. Sometimes, there are important things every college student should know, like the date of an exam, the deadline of a project, etc.
-
-## A social network for students
+<FullImage
+  image={{
+    src: upload_process_dark_img,
+    alt: "Upload image process",
+  }}
+  lightSrc={upload_process_light_img}
+/>
 
 I'm actively working on Classhub, a social network exclusively for students. At registration, the user must enter a valid university email address. This way, we can ensure that only students can register.
 
-## Features
+## Usage
 
 <ImageGallery
   images={[
     {
-      src: home_img,
-      alt: "Home",
-      screen: "mobile",
+      src: landing_img,
+      alt: "Landing page",
     },
     {
-      src: create_img,
-      alt: "Create",
-      screen: "mobile",
+      src: pic_input_img,
+      alt: "Input image",
     },
     {
-      src: search_img,
-      alt: "Search",
-      screen: "mobile",
+      src: pic_choosen_img,
+      alt: "Image choosen",
     },
     {
-      src: profile_img,
-      alt: "Profile",
-      screen: "mobile",
+      src: pic_processing_img,
+      alt: "Image processing",
     },
     {
-      src: following_img,
-      alt: "Following",
-      screen: "mobile",
+      src: context_input_img,
+      alt: "Input context",
     },
     {
-      src: light_img,
-      alt: "Light",
-      screen: "mobile",
+      src: context_input_completed_img,
+      alt: "Input context completed",
     },
     {
-      src: desktop_img,
-      alt: "Desktop",
-      screen: "desktop",
+      src: processing_img,
+      alt: "Processing",
+    },
+    {
+      src: finished_img,
+      alt: "Finished",
     },
   ]}
   className="mb-4"

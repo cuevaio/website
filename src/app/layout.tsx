@@ -1,8 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { cn } from "../lib/utils";
+import { cn } from "@/lib/utils";
 import Navbar from "@/components/navbar";
+import { Providers } from "@/components/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,7 +29,7 @@ export default function RootLayout({
           width="100%"
           height="100%"
         >
-          <filter id="pedroduarteisalegend">
+          <filter>
             <feTurbulence
               type="fractalNoise"
               baseFrequency="0.8"
@@ -42,46 +43,48 @@ export default function RootLayout({
             filter="url(#pedroduarteisalegend)"
           />
         </svg>
-        <div className="h-[100dvh] overflow-auto [scrollbar-gutter:stable] relative flex flex-col">
-          <Navbar />
-          <div className="w-full max-w-[700px] mx-auto px-2 grow">
-            {children}
-          </div>
+        <Providers>
+          <div className="h-[100dvh] overflow-auto [scrollbar-gutter:stable] relative flex flex-col">
+            <Navbar />
+            <div className="w-full max-w-[700px] mx-auto px-2 grow">
+              {children}
+            </div>
 
-          <div className="w-full sticky bottom-0 z-10 bg-background/90 mt-32 text-muted-foreground">
-            <footer className="px-2 flex items-center justify-between w-full max-w-[700px] mx-auto h-10 font-mono">
-              <p>
-                Anthony Cueva (
-                <a href="https://twitter.com/cuevantn" className="underline">
-                  @cuevantn
+            <div className="w-full sticky bottom-0 z-10 bg-background/90 mt-32 text-muted-foreground">
+              <footer className="px-2 flex items-center justify-between w-full max-w-[700px] mx-auto h-10 font-mono">
+                <p>
+                  Anthony Cueva (
+                  <a href="https://twitter.com/cuevantn" className="underline">
+                    @cuevantn
+                  </a>
+                  )
+                </p>
+                <a
+                  href="https://github.com/cuevantn/website"
+                  className="underline"
+                >
+                  Source
                 </a>
-                )
-              </p>
+              </footer>
+            </div>
+            <div className="px-2 w-full max-w-[700px] mx-auto mb-16 mt-6 font-mono text-muted-foreground">
+              Made with{" "}
               <a
-                href="https://github.com/cuevantn/website"
+                href="https://nextjs.org/docs/getting-started/installation"
                 className="underline"
               >
-                Source
+                Next.js
+              </a>{" "}
+              and{" "}
+              <a
+                href="https://xata.io/docs/getting-started/nextjs"
+                className="underline"
+              >
+                Xata
               </a>
-            </footer>
+            </div>
           </div>
-          <div className="px-2 w-full max-w-[700px] mx-auto mb-16 mt-6 font-mono text-muted-foreground">
-            Made with{" "}
-            <a
-              href="https://nextjs.org/docs/getting-started/installation"
-              className="underline"
-            >
-              Next.js
-            </a>{" "}
-            and{" "}
-            <a
-              href="https://xata.io/docs/getting-started/nextjs"
-              className="underline"
-            >
-              Xata
-            </a>
-          </div>
-        </div>
+        </Providers>
       </body>
     </html>
   );

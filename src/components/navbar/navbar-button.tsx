@@ -45,7 +45,7 @@ const NavbarButton = ({
             
             group-data-[href-active=true]:opacity-50 group-data-[href-active=true]:scale-100
 
-            opacity-0 group-data-[state=open]:opacity-100 
+            opacity-0 group-data-[state=open]:opacity-30 
             scale-50 group-data-[state=open]:scale-100"
             />
           </LinkComponent>
@@ -57,7 +57,7 @@ const NavbarButton = ({
           w-min -ml-4
           px-4 py-2
           rounded-lg font-semibold text-xs text-primary 
-          bg-gradient-to-r from-purple-500/100 to-pink-500/100 outline-0 border-0
+          bg-gradient-to-r from-purple-500/30 to-pink-500/30 outline-0 border-0
           "
       >
         {toolTip}

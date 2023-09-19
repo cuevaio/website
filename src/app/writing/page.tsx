@@ -51,10 +51,10 @@ const Page = async () => {
 
   return (
     <div>
-      <h1 className="text-primary text-4xl sm:text-5xl font-bold grow pt-16 mb-6 mr-24">
+      <h1 className="text-primary text-4xl sm:text-5xl font-bold grow mb-6 mr-24">
         Writing
       </h1>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {pages.map((page) => (
           <Link
             href={`/writing/${page.path}`}
@@ -68,9 +68,10 @@ const Page = async () => {
             <span
               className="
               z-[-1]
+              rounded-lg
               absolute top-0 bottom-0 right-0 left-0 
             bg-gradient-to-r from-purple-500 to-pink-500 
-            transition-all 
+            transition-all duration-300
             opacity-0 group-hover:opacity-30 group-focus:opacity-30 
             scale-50 group-hover:scale-100 group-focus:scale-100"
             />

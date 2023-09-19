@@ -48,7 +48,7 @@ export default function RootLayout({
           <div className="h-[100dvh] overflow-auto [scrollbar-gutter:stable] relative flex flex-col">
             <Navbar />
 
-            <div className="w-full max-w-[700px] mx-auto px-2 grow">
+            <div className="w-full max-w-[700px] mx-auto px-4 grow">
               {children}
             </div>
 

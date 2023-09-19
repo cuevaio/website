@@ -61,11 +61,19 @@ const Page = async () => {
             className="rounded-lg p-4 relative group overflow-hidden"
             key={page.path}
           >
-            <h2 className="font-bold mb-1">{page.title}</h2>
-            <p className="text-sm">{page.description}</p>
-            <p className="text-sm">{page.date}</p>
+            <h2 className="font-bold mb-1 z-20">{page.title}</h2>
+            <p className="text-sm z-10">{page.description}</p>
+            <p className="text-sm z-10">{page.date}</p>
 
-            <span className="absolute top-0 bottom-0 right-0 left-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 transition-all group-hover:opacity-10 group-focus:opacity-10 scale-50 group-hover:scale-100 group-focus:scale-100" />
+            <span
+              className="
+              z-[-1]
+              absolute top-0 bottom-0 right-0 left-0 
+            bg-gradient-to-r from-purple-500 to-pink-500 
+            transition-all 
+            opacity-0 group-hover:opacity-30 group-focus:opacity-30 
+            scale-50 group-hover:scale-100 group-focus:scale-100"
+            />
           </Link>
         ))}
       </div>

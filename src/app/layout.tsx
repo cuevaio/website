@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/navbar";
 import { Providers } from "@/components/providers";
+import { Footer } from "@/components/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,67 +23,36 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
+    <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className)}>
-        <svg
-          className="pointer-events-none fixed isolate z-50 opacity-40 mix-blend-color-dodge"
-          width="100%"
-          height="100%"
-        >
-          <filter>
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.8"
-              numOctaves="2"
-              stitchTiles="stitch"
-            />
-          </filter>
-          <rect
+        <Providers>
+          <svg
+            className="pointer-events-none fixed isolate z-50 opacity-40 mix-blend-color-dodge"
             width="100%"
             height="100%"
-            filter="url(#pedroduarteisalegend)"
-          />
-        </svg>
-        <Providers>
+          >
+            <filter id="pedroduarteisalegend">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.8"
+                numOctaves="2"
+                stitchTiles="stitch"
+              />
+            </filter>
+            <rect
+              width="100%"
+              height="100%"
+              filter="url(#pedroduarteisalegend)"
+            />
+          </svg>
           <div className="h-[100dvh] overflow-auto [scrollbar-gutter:stable] relative flex flex-col">
             <Navbar />
+
             <div className="w-full max-w-[700px] mx-auto px-2 grow">
               {children}
             </div>
 
-            <div className="w-full sticky bottom-0 z-10 bg-background/90 mt-32 text-muted-foreground">
-              <footer className="px-2 flex items-center justify-between w-full max-w-[700px] mx-auto h-10 font-mono">
-                <p>
-                  Anthony Cueva (
-                  <a href="https://twitter.com/cuevantn" className="underline">
-                    @cuevantn
-                  </a>
-                  )
-                </p>
-                <a
-                  href="https://github.com/cuevantn/website"
-                  className="underline"
-                >
-                  Source
-                </a>
-              </footer>
-            </div>
-            <div className="px-2 w-full max-w-[700px] mx-auto mb-16 mt-6 font-mono text-muted-foreground">
-              Made with{" "}
-              <a
-                href="https://nextjs.org/docs/getting-started/installation"
-                className="underline"
-              >
-                Next.js
-              </a>{" "}
-              and{" "}
-              <a
-                href="https://xata.io/docs/getting-started/nextjs"
-                className="underline"
-              >
-                Xata
-              </a>
-            </div>
+            <Footer />
           </div>
         </Providers>
       </body>

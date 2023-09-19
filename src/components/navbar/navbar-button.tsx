@@ -29,7 +29,7 @@ const NavbarButton = ({
   return (
     <HoverCard openDelay={150} closeDelay={50}>
       <HoverCardTrigger asChild>
-        <Button size="icon" asChild>
+        <Button size="icon" variant="ghost" asChild>
           <LinkComponent
             href={href}
             data-href-active={active}
@@ -37,13 +37,15 @@ const NavbarButton = ({
           >
             <Icon className="text-primary z-10" />
             <span
-              className="absolute top-0 bottom-0 right-0 left-0 
+              className="
+              absolute top-0 bottom-0 right-0 left-0 
+              rounded-lg 
             bg-gradient-to-r from-purple-500 to-pink-500 
             transition-all duration-300
             
             group-data-[href-active=true]:opacity-50 group-data-[href-active=true]:scale-100
 
-            opacity-0 group-data-[state=open]:opacity-30 
+            opacity-0 group-data-[state=open]:opacity-100 
             scale-50 group-data-[state=open]:scale-100"
             />
           </LinkComponent>
@@ -55,7 +57,7 @@ const NavbarButton = ({
           w-min -ml-4
           px-4 py-2
           rounded-lg font-semibold text-xs text-primary 
-          bg-gradient-to-r from-purple-500/30 to-pink-500/30
+          bg-gradient-to-r from-purple-500/100 to-pink-500/100 outline-0 border-0
           "
       >
         {toolTip}

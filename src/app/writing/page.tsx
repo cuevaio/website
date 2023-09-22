@@ -8,6 +8,8 @@ interface PageInfo {
   date: string;
 }
 
+import { Typography } from "@/mdx-components";
+
 async function getPages(directoryPath: string): Promise<PageInfo[]> {
   try {
     let basePath: string = path.join(process.cwd(), directoryPath);
@@ -51,9 +53,9 @@ const Page = async () => {
 
   return (
     <div>
-      <h1 className="text-primary text-4xl sm:text-5xl font-bold grow mb-6 mr-24">
-        Writing
-      </h1>
+      <Typography.h1>
+        <Typography.a>Writing</Typography.a>
+      </Typography.h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {pages.map((page) => (
           <Link

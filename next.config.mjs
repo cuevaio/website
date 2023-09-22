@@ -4,8 +4,6 @@ import createMDX from "@next/mdx";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
-const HEADING_LINK_ANCHOR = `md:before:content-['#'] md:before:absolute md:before:-ml-[1em] md:before:text-primary/0 md:hover:before:text-primary/50 md:pl-[1em] md:-ml-[1em] after:content-['#'] md:after:content-[''] after:absolute after:-mr-[1em] after:text-primary/0 hover:after:text-primary/50 pr-[1em] -mr-[1em]`;
-
 /** @type {import('rehype-pretty-code').Options} */
 const rehypePrettyCodeOptions = {
   theme: {
@@ -33,14 +31,19 @@ const withMDX = createMDX({
     extension: /\.mdx?$/,
     remarkPlugins: [[remarkGfm]],
     rehypePlugins: [
-      [rehypeSlug],
+      [
+        rehypeSlug,
+        {
+          prefix: "heading-",
+        },
+      ],
       [rehypePrettyCode, rehypePrettyCodeOptions],
       [
         rehypeAutolinkHeadings,
         {
           behavior: "wrap",
           properties: {
-            className: [HEADING_LINK_ANCHOR],
+            className: "auto-link-heading",
           },
         },
       ],

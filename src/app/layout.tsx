@@ -1,12 +1,22 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fira_Code, Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/navbar";
 import { Providers } from "@/components/providers";
 import { Footer } from "@/components/footer";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const fira_code = Fira_Code({
+  subsets: ["latin"],
+  variable: "--font-fira-code",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Anthony Cueva | Software Engineer",
@@ -23,8 +33,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={cn(inter.className)}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn(inter.variable, fira_code.variable)}
+    >
+      <body>
         <Providers>
           <svg
             className="pointer-events-none fixed isolate z-50 opacity-40 mix-blend-color-dodge"
@@ -51,7 +65,6 @@ export default function RootLayout({
             <div className="w-full max-w-[700px] mx-auto px-4 grow">
               {children}
             </div>
-
             <Footer />
           </div>
         </Providers>

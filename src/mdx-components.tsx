@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { MDXComponents } from "mdx/types";
-import { cn } from "./lib/utils";
+import { cn } from "@/lib/utils";
 import { Checkbox } from "./components/ui/checkbox";
 import Link from "next/link";
 

@@ -1,0 +1,6 @@
+{
+  "name": "Great Pics",
+  "description": "Create accessible tweets with images",
+  "tags": ["react", "nextjs", "tailwindcss", "vercel"],
+  "url": "https://greatpics.app"
+}

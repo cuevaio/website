@@ -1,34 +1,34 @@
 import Link from "next/link";
 
 import { Typography } from "@/mdx-components";
-
+import { z } from "zod";
 import { getPages } from "@/lib/utils/server";
 
-import { z } from "zod";
-
-let Writing = z.object({
-  title: z.string(),
+let Project = z.object({
+  name: z.string(),
   description: z.string(),
-  date: z.coerce.date(),
+  url: z.string().url(),
+  tags: z.array(z.string()),
 });
+
 const Page = async () => {
-  let writings = await getPages("/writing", Writing);
+  let projects = await getPages("/projects", Project);
 
   return (
     <div>
       <Typography.h1>
-        <Typography.a>Writing</Typography.a>
+        <Typography.a>Projects</Typography.a>
       </Typography.h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {writings.map(({ path, metadata }) => (
+        {projects.map(({ path, metadata }) => (
           <Link
             href={path}
             className="rounded-lg p-4 relative group overflow-hidden"
             key={path}
           >
-            <p className="font-bold mb-1 z-20">{metadata.title}</p>
+            <p className="font-bold mb-1 z-20">{metadata.name}</p>
             <p className="text-sm z-10">{metadata.description}</p>
-            <p className="text-sm z-10">{metadata.date.toLocaleDateString()}</p>
+            <p className="text-sm z-10">{metadata.url}</p>
 
             <span
               className="

@@ -14,13 +14,19 @@ let Writing = z.object({
 const Page = async () => {
   let writings = await getPages("/writing", Writing);
 
+  let sortedWritings = writings.sort((a, b) => {
+    if (a.metadata.date > b.metadata.date) return -1;
+    if (a.metadata.date < b.metadata.date) return 1;
+    return 0;
+  });
+
   return (
     <div>
       <Typography.h1>
         <Typography.a>Writing</Typography.a>
       </Typography.h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {writings.map(({ path, metadata }) => (
+        {sortedWritings.map(({ path, metadata }) => (
           <Link
             href={path}
             className="rounded-lg p-4 relative group overflow-hidden"

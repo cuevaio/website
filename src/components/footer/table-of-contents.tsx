@@ -83,7 +83,7 @@ function HeadingList({ headings }: { headings: HeadingsTree }) {
   return (
     <ol className="text-md sm:text-lg leading-7">
       <li>
-        <SheetClose>
+        <SheetClose asChild>
           <a href={`#${headings.id}`} className="font-bold hover:underline">
             {headings.text}
           </a>

@@ -15,7 +15,7 @@ const Footer = () => (
       </div>
     </div>
     <Separator className="my-8" />
-    <footer className="mb-16 px-4 w-full max-w-[700px] mx-auto h-12  text-muted-foreground font-mono">
+    <footer className="mb-16 px-4 w-full max-w-[700px] mx-auto h-12  text-muted-foreground font-mono flex justify-between">
       <p className="mb-2">Anthony Cueva</p>
       <a
         href="https://github.com/cuevantn/website"

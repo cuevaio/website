@@ -12,7 +12,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       enableSystem
       disableTransitionOnChange
     >
-      <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+      {children}
     </NextThemesProvider>
   );
 };

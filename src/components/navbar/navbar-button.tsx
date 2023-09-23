@@ -9,6 +9,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { cn } from "@/lib/utils";
 
 type Icon = typeof FileIcon;
 
@@ -17,11 +18,13 @@ const NavbarButton = ({
   toolTip,
   href,
   active = false,
+  colors = "from-purple-500 to-pink-500",
 }: {
   icon: Icon;
   toolTip: string;
   href: string;
   active?: boolean;
+  colors?: string;
 }) => {
   let LinkComponent = href.startsWith("/") ? Link : "a";
   let Icon = icon;
@@ -37,28 +40,32 @@ const NavbarButton = ({
           >
             <Icon className="text-primary z-10" />
             <span
-              className="
-              absolute top-0 bottom-0 right-0 left-0 
-              rounded-lg 
-            bg-gradient-to-r from-purple-500 to-pink-500 
-            transition-all duration-300
-            
-            group-data-[href-active=true]:opacity-50 group-data-[href-active=true]:scale-100
+              className={cn(
+                "absolute top-0 bottom-0 right-0 left-0",
+                "rounded-lg ",
+                "bg-gradient-to-tr",
+                colors,
+                "transition-all duration-300",
 
-            opacity-0 group-data-[state=open]:opacity-30 
-            scale-50 group-data-[state=open]:scale-100"
+                "group-data-[href-active=true]:opacity-100 group-data-[href-active=true]:scale-100",
+
+                "opacity-0 group-data-[state=open]:opacity-100",
+                "scale-50 group-data-[state=open]:scale-100"
+              )}
             />
           </LinkComponent>
         </Button>
       </HoverCardTrigger>
       <HoverCardContent
         side="bottom"
-        className="
-          w-min -ml-4
-          px-4 py-2
-          rounded-lg font-semibold text-xs text-primary 
-          bg-gradient-to-r from-purple-500/30 to-pink-500/30 outline-0 border-0
-          "
+        className={cn(
+          "w-min -ml-4",
+          "px-4 py-2",
+          "rounded-lg font-semibold text-xs text-primary",
+          "outline-0 border-0",
+          "bg-gradient-to-tr",
+          colors
+        )}
       >
         {toolTip}
       </HoverCardContent>

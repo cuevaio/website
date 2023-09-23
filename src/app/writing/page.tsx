@@ -41,7 +41,7 @@ const Page = async () => {
               z-[-1]
               rounded-lg
               absolute top-0 bottom-0 right-0 left-0 
-            bg-gradient-to-r from-purple-500 to-pink-500 
+            bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-400 
             transition-all duration-300
             opacity-0 group-hover:opacity-30 group-focus:opacity-30 
             scale-50 group-hover:scale-100 group-focus:scale-100"

@@ -2,10 +2,7 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx,mdx}",
-    "./components/**/*.{ts,tsx,mdx}",
-    "./app/**/*.{ts,tsx,mdx}",
-    "./src/**/*.{ts,tsx,mdx}",
+    "./src/**/*.{js,jsx,ts,tsx,md,mdx}",
     "./next.config.mjs",
   ],
   theme: {

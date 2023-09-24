@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Typography } from "@/mdx-components";
+import { Typography } from "@/components/typography";
 
 import { getPages } from "@/lib/utils/server";
 

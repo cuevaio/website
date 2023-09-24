@@ -1,4 +1,4 @@
-import { Typography } from "@/mdx-components";
+import { Typography } from "@/components/typography";
 
 const Page = () => (
   <div>

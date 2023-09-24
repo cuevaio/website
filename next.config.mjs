@@ -3,6 +3,7 @@ import remarkGfm from "remark-gfm";
 import createMDX from "@next/mdx";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import { visit } from "unist-util-visit";
 
 /** @type {import('rehype-pretty-code').Options} */
 const rehypePrettyCodeOptions = {
@@ -22,7 +23,34 @@ const rehypePrettyCodeOptions = {
     if (node.children.length === 0) {
       node.children = [{ type: "text", value: " " }];
     }
-    node.properties.className = [""];
+  },
+  onVisitTitle(node) {
+    let circle = {
+      type: "element",
+      tagName: "div",
+      properties: {
+        className: ["title-circle-element"],
+      },
+    };
+
+    node.children = [
+      {
+        type: "element",
+        tagName: "div",
+        properties: {
+          className: ["title-text"],
+        },
+        children: node.children,
+      },
+      {
+        type: "element",
+        tagName: "div",
+        properties: {
+          className: ["title-circles-container"],
+        },
+        children: [circle, circle, circle],
+      },
+    ];
   },
 };
 
@@ -37,7 +65,6 @@ const withMDX = createMDX({
           prefix: "heading-",
         },
       ],
-      [rehypePrettyCode, rehypePrettyCodeOptions],
       [
         rehypeAutolinkHeadings,
         {
@@ -47,16 +74,14 @@ const withMDX = createMDX({
           },
         },
       ],
+      [rehypePrettyCode, rehypePrettyCodeOptions],
     ],
   },
 });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ["js", "jsx", "ts", "tsx", "mdx"],
-  images: {
-    domains: ["e00-marca.uecdn.es"],
-  },
+  pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
 };
 
 export default withMDX(nextConfig);

@@ -1,4 +1,4 @@
-import { Typography } from "@/mdx-components";
+import { Typography } from "@/components/typography";
 
 const Hero = () => (
   <Typography.h1 className="group flex items-center gap-2 hover:lowercase">

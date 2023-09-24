@@ -1,13 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: [
-    "./pages/**/*.{ts,tsx,mdx}",
-    "./components/**/*.{ts,tsx,mdx}",
-    "./app/**/*.{ts,tsx,mdx}",
-    "./src/**/*.{ts,tsx,mdx}",
-    "./next.config.mjs",
-  ],
+  content: ["./src/**/*.{js,jsx,ts,tsx,mdx}", "./next.config.mjs"],
   theme: {
     extend: {
       fontFamily: {

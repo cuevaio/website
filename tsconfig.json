@@ -29,6 +29,6 @@
     "**/*.tsx",
     "**/*.mdx",
     ".next/types/**/*.ts"
-, "mdx.config.js"  ],
+, "mdx.config.js", "src/lib/bright-extensions.js"  ],
   "exclude": ["node_modules"]
 }

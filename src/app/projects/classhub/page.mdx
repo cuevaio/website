@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ImageGallery } from "@/components/image-gallery";
 import { ViewAppButton } from "@/components/view-app-button";
 
+
 export const metadata = {
   title: "Classhub, a social network for students",
   description: `Here I show you the project I made for my final degree project. 
@@ -19,9 +20,11 @@ export const metadata = {
     It is made with React, Redux, NodeJS, Express, MongoDB, Socket.io, etc.`,
 };
 
+
 # Classhub, a social network for students
 
 <ViewAppButton href="https://theclasshub.vercel.app/" />
+
 
 A social network for students
 
@@ -81,10 +84,9 @@ I'm actively working on Classhub, a social network exclusively for students. At 
 
 it's so cool `hello()`
 
-```images.ts
-// lineNumbers
+```ts showLineNumbers title="src/pages/api/posts/[id]/images.ts"  {6-10, 13}
 let images = [];
-// focus(1:2)
+
 let i = 0;
 while (true) {
   let file = form_data.get(`file-${i}`);

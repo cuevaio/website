@@ -4,21 +4,6 @@ import { cn } from "@/lib/utils";
 import { Checkbox } from "./components/ui/checkbox";
 import Link from "next/link";
 
-import { Code } from "bright";
-import { focus } from "@/lib/bright-extensions/focus";
-import { fileIcons } from "@/lib/bright-extensions/file-icons";
-import { collapse } from "@/lib/bright-extensions/collapse";
-import { lineNumbers } from "@/lib/bright-extensions/line-numbers";
-import { title } from "@/lib/bright-extensions/title";
-import { tabs } from "@/lib/bright-extensions/tabs";
-
-Code.extensions = [tabs, title, fileIcons, lineNumbers, focus, collapse];
-
-Code.theme = {
-  dark: "github-dark",
-  light: "github-light",
-};
-
 export function getChildren(children: React.ReactNode): string {
   if (typeof children === "string") {
     return children;
@@ -220,6 +205,15 @@ const Typography = {
     </li>
   ),
 
+  pre: ({
+    children,
+    ...props
+  }: React.HTMLAttributes<HTMLPreElement>): React.ReactNode => (
+    <pre {...props} style={{}}>
+      {children}
+    </pre>
+  ),
+
   a: ({
     children,
     href,
@@ -236,6 +230,8 @@ const Typography = {
         {...props}
         className={cn("hover:underline font-mono", className, {
           "font-sans": href.startsWith("#"),
+          "md:before:content-['#'] md:before:absolute md:before:-ml-[1em] md:before:text-primary/0 md:hover:before:text-primary/50 md:pl-[1em] md:-ml-[1em] after:content-['#'] md:after:content-[''] after:absolute after:-mr-[1em] after:text-primary/0 hover:after:text-primary/50 pr-[1em] -mr-[1em]":
+            className?.includes("auto-link-heading"),
         })}
       >
         {children}
@@ -248,8 +244,7 @@ function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     ...components,
     ...Typography,
-    pre: Code,
   };
 }
 
-export { useMDXComponents, Typography, Code };
+export { useMDXComponents, Typography };

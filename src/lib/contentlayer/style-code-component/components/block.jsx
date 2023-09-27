@@ -25,42 +25,84 @@ const DefaultStyledCodeBlockComponent = ({ title }) => (
         ))}
       </div>
     </div>
-    <pre className={cn("sm:text-lg leading-6 py-2 hidden dark:block")}>
+    <pre className={cn("sm:text-lg leading-6 py-2")}>
+      <div className="abc"></div>
       <code
         style={{
           counterReset: "lineNumber",
         }}
-        className="grid w-full group"
+        className={cn(
+          "w-full group grid",
+
+          "data-[theme=dark]:hidden",
+          "dark:data-[theme=dark]:grid",
+
+          "data-[theme=light]:grid",
+          "dark:data-[theme=light]:hidden"
+        )}
       >
         <span
           className={cn(
             "border-l-4 border-l-transparent pl-2 pr-6",
 
-            "before:mr-5 before:w-6",
+            "before:mr-5 before:ml-1.5 before:w-6",
             "before:inline-block",
             "before:text-right before:text-primary/20",
             "before:[content:counter(lineNumber)]",
 
             "data-[highlighted-line]:bg-primary/10",
-            "data-[highlighted-line]:border-l-primary"
+            "data-[highlighted-line]:border-l-primary",
+            "relative"
           )}
           style={{
             counterIncrement: "lineNumber",
           }}
           data-pc-line
         >
+          <span className="w-2 h-2 rounded-full bg-red-500/10 absolute top-1/2 -translate-y-1/2 left-1"></span>
           <span
             className={cn(
               "data-[highlighted-chars]:bg-blue-800/60",
               "data-[highlighted-chars]:rounded",
-              "data-[highlighted-chars]:px-3",
+              "data-[highlighted-chars]:px-1",
 
               "data-[chars-id=let]:bg-red-800"
             )}
             data-pc-token
           />
         </span>
+        <span
+          className={cn(
+            "border-l-4 border-l-transparent pl-2 pr-6",
+            "text-muted-foreground",
+
+            "before:mr-5 before:w-6",
+            "before:inline-block",
+            "before:text-right before:text-primary/20",
+            "before:[content:counter(lineNumber)]"
+          )}
+          style={{
+            counterIncrement: "lineNumber",
+          }}
+        ></span>
+        <span
+          className={cn(
+            "border-l-4 border-l-transparent pl-2 pr-6",
+            "text-muted-foreground",
+
+            "before:mr-5 before:w-6",
+            "before:inline-block",
+            "before:text-right before:text-primary/20",
+            "before:[content:counter(lineNumber)]"
+          )}
+          style={{
+            counterIncrement: "lineNumber",
+          }}
+        >
+          //made by anthony
+        </span>
       </code>
+      <div className="def"></div>
     </pre>
   </div>
 );

@@ -40,20 +40,18 @@ function StyleCodeComponent(options) {
             node,
             (node) => node.tagName === "code",
             (code) => {
-              if (code.properties["data-theme"] === "dark") {
-                code_dark = {
-                  ...code,
-                  children: code.children.filter(
-                    (line) =>
-                      line.children &&
-                      line.children.length > 0 &&
-                      line.children[0].value !== "\n"
-                  ),
-                };
-              } else if (code.properties["data-theme"] === "light") {
-                code_light = code;
+              const theme = code.properties["data-theme"] || "default";
+              const children = code.children.filter(
+                (line) =>
+                  line.children && line.children?.[0].value?.trim() !== ""
+              );
+              const filteredCode = { ...code, children };
+              if (theme === "dark") {
+                code_dark = filteredCode;
+              } else if (theme === "light") {
+                code_light = filteredCode;
               } else {
-                code_default = code;
+                code_default = filteredCode;
               }
             }
           );
@@ -108,18 +106,32 @@ function StyleCodeComponent(options) {
           let new_styled_block = {
             ...styled_block,
           };
-          if (code_dark) {
-            visit(
-              new_styled_block,
-              (node) =>
-                node.children?.some((child) => child.tagName === "code"),
-              (pc_code_container) => {
-                let pc_code_container_children = [];
 
-                for (let i = 0; i < pc_code_container.children.length; i++) {
-                  if (pc_code_container.children[i].tagName === "code") {
+          let code_components = [];
+          if (code_default) {
+            code_components.push(code_default);
+          }
+          if (code_light) {
+            code_components.push(code_light);
+          }
+          if (code_dark) {
+            code_components.push(code_dark);
+          }
+
+          console.log(code_components);
+
+          visit(
+            new_styled_block,
+            (node) => node.children?.some((child) => child.tagName === "code"),
+            (pc_code_container) => {
+              let pc_code_container_children = [];
+
+              for (let i = 0; i < pc_code_container.children.length; i++) {
+                if (pc_code_container.children[i].tagName === "code") {
+                  code_components.forEach((code_component) => {
+                    let code_xxxxx = get_pc_code();
                     visit(
-                      pc_code_container.children[i],
+                      code_xxxxx,
                       (node) =>
                         node.children?.some(
                           (child) => child.properties?.["data-pc-line"]
@@ -135,9 +147,8 @@ function StyleCodeComponent(options) {
                             ...pc_lines_container.children[i],
                           };
                           if (current_element.properties["data-pc-line"]) {
-                            let lines_to_add = code_dark?.children?.map(
+                            let lines_to_add = code_component?.children?.map(
                               (line, i) => {
-                                console.log(line, i);
                                 let pc_line = get_pc_line();
                                 let styled_line = { ...pc_line };
 
@@ -210,21 +221,25 @@ function StyleCodeComponent(options) {
                           pc_lines_container_children;
                       }
                     );
-                    let pc_code = get_pc_code();
-                    pc_code_container.children[i]["properties"] = {
-                      ...code_dark.properties,
-                      ...pc_code.properties,
+                    code_xxxxx["properties"] = {
+                      ...code_component.properties,
+                      ...code_xxxxx.properties,
                     };
-                  }
+
+                    if (code_component.properties["data-theme"]) {
+                      pc_code_container_children.push(code_xxxxx);
+                    }
+                  });
+                } else {
                   pc_code_container_children.push(
                     pc_code_container.children[i]
                   );
                 }
-
-                pc_code_container["children"] = pc_code_container_children;
               }
-            );
-          }
+              console.log(pc_code_container_children);
+              pc_code_container["children"] = pc_code_container_children;
+            }
+          );
 
           node.tagName = new_styled_block.tagName;
           node.children = new_styled_block.children;

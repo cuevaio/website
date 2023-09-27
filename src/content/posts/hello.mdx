@@ -1,0 +1,41 @@
+---
+title: "My First Post"
+date: 2023-09-25
+description: "This is my first post"
+status: "published"
+---
+
+# Hello world!
+
+Lorem ipsum dolor sit amet lorem
+
+Ullamco et nostrud magna commodo nostrud ...
+
+## Subtitle
+
+HOla `mundo`
+Lorem ipsum dolor sit amet lorem
+
+Ullamco et nostrud magna commodo nostrud ...
+
+```tsx showLineNumbers title="pages/blog/[slug].tsx" {6-10} /allPosts/ /a/
+export default function SinglePostPage({
+  post,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
+  return (
+    <div>
+      <h1>{post.title}</h1>
+      <MDXContent />
+    </div>
+  );
+}
+```
+
+```tsx showLineNumbers title="pages/blog/[slug].tsx" {6-10} /let/#let /colors/
+import * as React from "react";
+import { cn } from "../cn";
+
+let colors = ["bg-red-500", "bg-yellow-500", "bg-green-500"];
+
+export { DefaultStyledCodeBlockComponent };
+```

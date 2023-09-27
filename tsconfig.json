@@ -20,15 +20,18 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "content": ["./.contentlayer/generated"]
     }
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.mdx",
-    ".next/types/**/*.ts"
-, "mdx.config.js"  ],
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "next.config.js",
+    ".contentlayer/**/*"
+, "src/lib/contentlayer/style-code-component/components/markup.ssx", "src/lib/contentlayer/style-code-component.jsx"  ],
   "exclude": ["node_modules"]
 }

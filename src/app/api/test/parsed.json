@@ -1,0 +1,30 @@
+{
+  "type": "element",
+  "tagName": "div",
+  "properties": {
+    "className": ["title-circles-container"]
+  },
+  "children": [
+    {
+      "type": "element",
+      "tagName": "div",
+      "properties": {
+        "className": ["title-circle-element"]
+      }
+    },
+    {
+      "type": "element",
+      "tagName": "div",
+      "properties": {
+        "className": ["title-circle-element"]
+      }
+    },
+    {
+      "type": "element",
+      "tagName": "div",
+      "properties": {
+        "className": ["title-circle-element"]
+      }
+    }
+  ]
+}

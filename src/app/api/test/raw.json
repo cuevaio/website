@@ -1,0 +1,46 @@
+{
+  "type": "div",
+  "key": null,
+  "ref": null,
+  "props": {
+    "data-name": "anthony",
+    "className": "title-circles-container",
+    "children": [
+      {
+        "type": "div",
+        "key": null,
+        "ref": null,
+        "props": {
+          "className": "title-circle-element",
+          "children": "1"
+        },
+        "_owner": null,
+        "_store": {}
+      },
+      {
+        "type": "div",
+        "key": null,
+        "ref": null,
+        "props": {
+          "className": "title-circle-element",
+          "children": "Hola"
+        },
+        "_owner": null,
+        "_store": {}
+      },
+      {
+        "type": "div",
+        "key": null,
+        "ref": null,
+        "props": {
+          "className": "title-circle-element",
+          "children": ["num-1", "num-2", "num-3", "num-4"]
+        },
+        "_owner": null,
+        "_store": {}
+      }
+    ]
+  },
+  "_owner": null,
+  "_store": {}
+}

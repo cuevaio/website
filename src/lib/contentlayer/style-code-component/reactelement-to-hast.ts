@@ -1,5 +1,5 @@
 import { type ReactElement } from "react";
-import { Position } from "unist";
+import { type Position } from "unist";
 import { Properties } from "hast";
 
 export type Hast = (

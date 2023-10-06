@@ -5,13 +5,15 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface FullImageProps extends React.HTMLProps<HTMLDivElement> {
-  image: ImageProps;
+  src: string;
+  lightSrc?: string;
   link: string;
-  lightSrc?: StaticImageData;
+  alt: string;
 }
 const FullImage = ({
-  image: { src, alt, className: imageClassName, ...imageProps },
+  src,
   lightSrc,
+  alt,
   className,
   ...props
 }: FullImageProps) => {
@@ -24,22 +26,19 @@ const FullImage = ({
       {...props}
     >
       <Image
+        width={1920}
+        height={1080}
         src={src}
         alt={alt}
-        className={cn(
-          "rounded-lg h-full w-full",
-          {
-            "opacity-0 dark:opacity-100": lightSrc,
-          },
-          imageClassName
-        )}
-        {...imageProps}
+        className={cn("rounded-lg h-full w-full", {
+          "opacity-0 dark:opacity-100": lightSrc,
+        })}
       />
       <div
         style={
           lightSrc
             ? {
-                backgroundImage: `url('${lightSrc.src}')`,
+                backgroundImage: `url('${lightSrc}')`,
                 backgroundSize: "contain",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
@@ -48,10 +47,7 @@ const FullImage = ({
         }
         className="dark:opacity-0 opacity-100 absolute rounded-lg top-4 bottom-4 left-4 right-4"
       />
-      <Link
-        href={typeof src === "string" ? src : (src as StaticImageData).src}
-        className="absolute top-4 bottom-4 left-4 right-4"
-      />
+      <Link href={src} className="absolute top-4 bottom-4 left-4 right-4" />
     </div>
   );
 };

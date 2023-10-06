@@ -1,0 +1,59 @@
+{
+  "type": "element",
+  "tagName": "span",
+  "properties": {
+    "className": "border-l-4 border-l-transparent pl-2 pr-6",
+    "data-line": ""
+  },
+  "children": [
+    {
+      "type": "element",
+      "tagName": "span",
+      "properties": {
+        "style": "color: #24292E"
+      },
+      "children": [
+        {
+          "type": "text",
+          "value": "}",
+          "position": {
+            "start": {
+              "line": 35,
+              "column": 49,
+              "offset": 7245
+            },
+            "end": {
+              "line": 35,
+              "column": 50,
+              "offset": 7246
+            }
+          }
+        }
+      ],
+      "position": {
+        "start": {
+          "line": 35,
+          "column": 20,
+          "offset": 7216
+        },
+        "end": {
+          "line": 35,
+          "column": 57,
+          "offset": 7253
+        }
+      }
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 35,
+      "column": 1,
+      "offset": 7197
+    },
+    "end": {
+      "line": 35,
+      "column": 64,
+      "offset": 7260
+    }
+  }
+}

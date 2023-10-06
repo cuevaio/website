@@ -1,0 +1,105 @@
+---
+name: "Classhub"
+description: "Exclusive social network for students"
+url: "https://theclasshub.vercel.app/"
+last_updated_at: 2023-10-06
+published_at: 2023-10-05
+status: "published"
+---
+
+
+# Classhub, a social network for students
+
+<ViewAppButton href="https://theclasshub.vercel.app/" />
+
+A social network for students
+
+As a college student, I have always had the need to share information with my classmates. Sometimes, there are important things every college student should know, like the date of an exam, the deadline of a project, etc.
+
+## A social network for students
+
+I'm actively working on Classhub, a social network exclusively for students. At registration, the user must enter a valid university email address. This way, we can ensure that only students can register.
+
+## Features
+
+<ImageGallery
+  images={[
+    {
+      src: "/assets/projects/classhub/home.png",
+      alt: "Home",
+      screen: "mobile",
+    },
+    {
+      src: "/assets/projects/classhub/create.png",
+      alt: "Create",
+      screen: "mobile",
+    },
+    {
+      src: "/assets/projects/classhub/search.png",
+      alt: "Search",
+      screen: "mobile",
+    },
+    {
+      src: "/assets/projects/classhub/profile.png",
+      alt: "Profile",
+      screen: "mobile",
+    },
+    {
+      src: "/assets/projects/classhub/following.png",
+      alt: "Following",
+      screen: "mobile",
+    },
+    {
+      src: "/assets/projects/classhub/light.png",
+      alt: "Light",
+      screen: "mobile",
+    },
+    {
+      src: "/assets/projects/classhub/desktop.png",
+      alt: "Desktop",
+      screen: "desktop",
+    },
+  ]}
+  className="mb-4"
+/>
+
+- [x] **Create posts**: You can create posts with images, text, and code snippets.
+- [x] **Search**: You can search for posts by title, content, or tags.
+
+## How it works
+
+it's so cool `hello()`
+
+```ts showLineNumbers title="src/pages/api/posts/[id]/images.ts"  {6-10, 13}
+let images = [];
+
+let i = 0;
+while (true) {
+  let file = form_data.get(`file-${i}`);
+  let alt = form_data.get(`alt-${i}`);
+
+  if (!file) {
+    break;
+  }
+
+  file = file as File;
+
+  let fileName: string = file.name;
+  let mimeType = file.type;
+  let fileData = Buffer.from(await file.arrayBuffer());
+
+  images.push({
+    alt: alt ? alt.toString() : null,
+    file: {
+      name: fileName,
+      mediaType: mimeType,
+      base64Content: fileData.toString("base64"),
+    },
+    status: newStatus.id,
+  });
+
+  i++;
+}
+
+await xata.db.image.create(images);
+```

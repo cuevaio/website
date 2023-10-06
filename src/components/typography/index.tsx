@@ -7,14 +7,12 @@ import { getIdFromChildren } from "@/lib/utils/get-children";
 
 export const Typography = {
   h1: ({
-    id,
     children,
     className,
     ...props
   }: React.HTMLAttributes<HTMLHeadingElement>): React.ReactNode => (
     <h1
       {...props}
-      id={id || `heading-${getIdFromChildren(children)}`}
       className={cn(
         "text-primary text-4xl sm:text-5xl font-bold grow pt-16 mb-6 mr-24 cursor-default",
         className
@@ -25,14 +23,12 @@ export const Typography = {
   ),
 
   h2: ({
-    id,
     children,
     className,
     ...props
   }: React.HTMLAttributes<HTMLHeadingElement>): React.ReactNode => (
     <h2
       {...props}
-      id={id || `heading-${getIdFromChildren(children)}`}
       className={cn(
         "text-primary text-3xl sm:text-4xl font-medium pt-16 mb-4",
         className
@@ -43,14 +39,12 @@ export const Typography = {
   ),
 
   h3: ({
-    id,
     children,
     className,
     ...props
   }: React.HTMLAttributes<HTMLHeadingElement>): React.ReactNode => (
     <h3
       {...props}
-      id={id || `heading-${getIdFromChildren(children)}`}
       className={cn(
         "text-primary text-2xl sm:text-3xl font-medium pt-16 mb-4",
         className
@@ -61,14 +55,12 @@ export const Typography = {
   ),
 
   h4: ({
-    id,
     children,
     className,
     ...props
   }: React.HTMLAttributes<HTMLHeadingElement>): React.ReactNode => (
     <h4
       {...props}
-      id={id || `heading-${getIdFromChildren(children)}`}
       className={cn(
         "text-primary text-xl sm:text-2xl font-medium pt-16 mb-4",
         className
@@ -78,42 +70,6 @@ export const Typography = {
     </h4>
   ),
 
-  h5: ({
-    id,
-    children,
-    className,
-    ...props
-  }: React.HTMLAttributes<HTMLHeadingElement>): React.ReactNode => (
-    <h5
-      {...props}
-      id={id || `heading-${getIdFromChildren(children)}`}
-      className={cn(
-        "text-primary text-lg sm:text-xl font-medium pt-16 mb-4",
-        className
-      )}
-    >
-      {children}
-    </h5>
-  ),
-
-  h6: ({
-    id,
-    children,
-    className,
-    ...props
-  }: React.HTMLAttributes<HTMLHeadingElement>): React.ReactNode => (
-    <h6
-      {...props}
-      id={id || `heading-${getIdFromChildren(children)}`}
-      className={cn(
-        "text-primary text-md sm:text-lg font-medium pt-16 mb-4",
-        className
-      )}
-    >
-      {children}
-    </h6>
-  ),
-
   p: ({
     children,
     className,
@@ -121,7 +77,7 @@ export const Typography = {
   }: React.HTMLAttributes<HTMLParagraphElement>): React.ReactNode => (
     <p
       {...props}
-      className={cn("mb-6 text-md sm:text-lg leading-7", className)}
+      className={cn(className || "mb-6 text-md sm:text-lg leading-7")}
     >
       {children}
     </p>
@@ -175,15 +131,6 @@ export const Typography = {
     </li>
   ),
 
-  pre: ({
-    children,
-    ...props
-  }: React.HTMLAttributes<HTMLPreElement>): React.ReactNode => (
-    <pre {...props} style={{}}>
-      {children}
-    </pre>
-  ),
-
   a: ({
     children,
     href,
@@ -200,8 +147,6 @@ export const Typography = {
         {...props}
         className={cn("hover:underline font-mono", className, {
           "font-sans": href.startsWith("#"),
-          "md:before:content-['#'] md:before:absolute md:before:-ml-[1em] md:before:text-primary/0 md:hover:before:text-primary/50 md:pl-[1em] md:-ml-[1em] after:content-['#'] md:after:content-[''] after:absolute after:-mr-[1em] after:text-primary/0 hover:after:text-primary/50 pr-[1em] -mr-[1em]":
-            className?.includes("auto-link-heading"),
         })}
       >
         {children}

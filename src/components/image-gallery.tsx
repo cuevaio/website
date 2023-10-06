@@ -8,7 +8,7 @@ import { Link2Icon, ZoomInIcon } from "@radix-ui/react-icons";
 
 interface ImageGalleryProps extends React.HTMLProps<HTMLDivElement> {
   images: {
-    src: StaticImageData;
+    src: string;
     alt: string;
     link?: string;
   }[];
@@ -29,6 +29,8 @@ const ImageGallery = ({ images, className, ...props }: ImageGalleryProps) => {
           key={i}
         >
           <Image
+            width={1900}
+            height={1080}
             src={image.src}
             alt={image.alt}
             className={cn("h-full w-full")}
@@ -54,7 +56,7 @@ const ImageGallery = ({ images, className, ...props }: ImageGalleryProps) => {
                 className="rounded-full"
                 asChild
               >
-                <Link href={image.src.src}>
+                <Link href={image.src}>
                   <ZoomInIcon className="w-4 h-4" />
                 </Link>
               </Button>

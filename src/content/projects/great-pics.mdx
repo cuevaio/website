@@ -1,0 +1,105 @@
+---
+name: "GreatPics"
+description: "Turn your pics into tweets using AI"
+url: "https://www.greatpics.app/"
+last_updated_at: 2023-10-06
+published_at: 2023-10-05
+status: "published"
+---
+
+# GreatPics
+
+<ViewAppButton href="https://www.greatpics.app/" />
+
+Great pics is a web applcation that uses AI to generate alt text for your pictures. It's build using Next.js, OpenAI, Xata, UploadThing, Upstash, and Tailwind CSS.
+
+## How it works
+
+<FullImage
+  src="/assets/projects/greatpics/upload-process-dark.png"
+  alt="Upload image process"
+  lightSrc="/assets/projects/greatpics/upload-process-light.png"
+/>
+
+I'm actively working on Classhub, a social network exclusively for students. At registration, the user must enter a valid university email address. This way, we can ensure that only students can register.
+
+## Usage
+
+<ImageGallery
+  images={[
+    {
+      src: "/assets/projects/greatpics/landing.png",
+      alt: "Landing page",
+    },
+    {
+      src: "/assets/projects/greatpics/pic-input.png",
+      alt: "Picture input",
+    },
+    {
+      src: "/assets/projects/greatpics/pic-choosen.png",
+      alt: "Picture choosen",
+    },
+    {
+      src: "/assets/projects/greatpics/pic-processing.png",
+      alt: "Picture processing",
+    },
+    {
+      src: "/assets/projects/greatpics/context-input.png",
+      alt: "Input context",
+    },
+    {
+      src: "/assets/projects/greatpics/context-input-completed.png",
+      alt: "Input context completed",
+    },
+    {
+      src: "/assets/projects/greatpics/processing.png",
+      alt: "Processing",
+    },
+    {
+      src: "/assets/projects/greatpics/finished.png",
+      alt: "Finished",
+    },
+  ]}
+  className="mb-4"
+/>
+
+- [x] **Create posts**: You can create posts with images, text, and code snippets.
+- [x] **Search**: You can search for posts by title, content, or tags.
+
+## How it works
+
+it's so cool `hello()`
+
+```ts showLineNumbers title="src/pages/api/posts/[id]/images.ts"  {6-10, 13}
+let images = [];
+
+let i = 0;
+while (true) {
+  let file = form_data.get(`file-${i}`);
+  let alt = form_data.get(`alt-${i}`);
+
+  if (!file) {
+    break;
+  }
+
+  file = file as File;
+
+  let fileName: string = file.name;
+  let mimeType = file.type;
+  let fileData = Buffer.from(await file.arrayBuffer());
+
+  images.push({
+    alt: alt ? alt.toString() : null,
+    file: {
+      name: fileName,
+      mediaType: mimeType,
+      base64Content: fileData.toString("base64"),
+    },
+    status: newStatus.id,
+  });
+
+  i++;
+}
+
+await xata.db.image.create(images);
+```

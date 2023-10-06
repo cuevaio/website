@@ -1,7 +1,17 @@
 import { useMDXComponent } from "next-contentlayer/hooks";
-import { allProjects } from "content";
+import { allProjects, Project } from "content";
 import { notFound } from "next/navigation";
 import { MDXComponents } from "@/components/mdx-components";
+
+const Project = ({ project }: { project: Project }) => {
+  const MDXContent = useMDXComponent(project.body.code);
+
+  return (
+    <div>
+      <MDXContent components={MDXComponents} />
+    </div>
+  );
+};
 
 const Page = ({
   params,
@@ -18,9 +28,7 @@ const Page = ({
     return notFound();
   }
 
-  const MDXContent = useMDXComponent(project.body.code);
-
-  return <MDXContent components={MDXComponents} />;
+  return <Project project={project} />;
 };
 
 export default Page;

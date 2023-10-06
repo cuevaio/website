@@ -1,30 +1,16 @@
-import Image from "next/image";
-
-import home_img from "./assets/home.png";
-import create_img from "./assets/create.png";
-import search_img from "./assets/search.png";
-import profile_img from "./assets/profile.png";
-import following_img from "./assets/following.png";
-import light_img from "./assets/light.png";
-import desktop_img from "./assets/desktop.png";
-
-import { Button } from "@/components/ui/button";
-import { ImageGallery } from "@/components/image-gallery";
-import { ViewAppButton } from "@/components/view-app-button";
-
-
-export const metadata = {
-  title: "Classhub, a social network for students",
-  description: `Here I show you the project I made for my final degree project. 
-    It is a social network for students, where they can share their notes, doubts, etc. 
-    It is made with React, Redux, NodeJS, Express, MongoDB, Socket.io, etc.`,
-};
+---
+name: "Classhub"
+description: "Exclusive social network for students"
+url: "https://theclasshub.vercel.app/"
+last_updated_at: 2023-10-06
+published_at: 2023-10-05
+status: "published"
+---
 
 
 # Classhub, a social network for students
 
 <ViewAppButton href="https://theclasshub.vercel.app/" />
-
 
 A social network for students
 
@@ -39,37 +25,37 @@ I'm actively working on Classhub, a social network exclusively for students. At 
 <ImageGallery
   images={[
     {
-      src: home_img,
+      src: "/assets/projects/classhub/home.png",
       alt: "Home",
       screen: "mobile",
     },
     {
-      src: create_img,
+      src: "/assets/projects/classhub/create.png",
       alt: "Create",
       screen: "mobile",
     },
     {
-      src: search_img,
+      src: "/assets/projects/classhub/search.png",
       alt: "Search",
       screen: "mobile",
     },
     {
-      src: profile_img,
+      src: "/assets/projects/classhub/profile.png",
       alt: "Profile",
       screen: "mobile",
     },
     {
-      src: following_img,
+      src: "/assets/projects/classhub/following.png",
       alt: "Following",
       screen: "mobile",
     },
     {
-      src: light_img,
+      src: "/assets/projects/classhub/light.png",
       alt: "Light",
       screen: "mobile",
     },
     {
-      src: desktop_img,
+      src: "/assets/projects/classhub/desktop.png",
       alt: "Desktop",
       screen: "desktop",
     },

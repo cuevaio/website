@@ -118,7 +118,6 @@ function StyleCodeComponent(options) {
             code_components.push(code_dark);
           }
 
-          console.log(code_components);
 
           visit(
             new_styled_block,
@@ -236,7 +235,6 @@ function StyleCodeComponent(options) {
                   );
                 }
               }
-              console.log(pc_code_container_children);
               pc_code_container["children"] = pc_code_container_children;
             }
           );

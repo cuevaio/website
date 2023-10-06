@@ -25,9 +25,9 @@ const Navbar: FunctionComponent<NavbarProps> = () => {
           <NavbarButton icon={HomeIcon} toolTip="Home" href="/" />
           <NavbarButton
             icon={FileTextIcon}
-            toolTip="Writing"
-            active={path.startsWith("/writing")}
-            href="/writing"
+            toolTip="Blog"
+            active={path.startsWith("/blog")}
+            href="/blog"
             colors="from-yellow-400 via-yellow-500 to-orange-400"
           />
           <NavbarButton

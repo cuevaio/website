@@ -26,7 +26,6 @@ const DefaultStyledCodeBlockComponent = ({ title }) => (
       </div>
     </div>
     <pre className={cn("sm:text-lg leading-6 py-2")}>
-      <div className="abc"></div>
       <code
         style={{
           counterReset: "lineNumber",
@@ -59,7 +58,6 @@ const DefaultStyledCodeBlockComponent = ({ title }) => (
           }}
           data-pc-line
         >
-          <span className="w-2 h-2 rounded-full bg-red-500/10 absolute top-1/2 -translate-y-1/2 left-1"></span>
           <span
             className={cn(
               "data-[highlighted-chars]:bg-blue-800/60",
@@ -71,38 +69,7 @@ const DefaultStyledCodeBlockComponent = ({ title }) => (
             data-pc-token
           />
         </span>
-        <span
-          className={cn(
-            "border-l-4 border-l-transparent pl-2 pr-6",
-            "text-muted-foreground",
-
-            "before:mr-5 before:w-6",
-            "before:inline-block",
-            "before:text-right before:text-primary/20",
-            "before:[content:counter(lineNumber)]"
-          )}
-          style={{
-            counterIncrement: "lineNumber",
-          }}
-        ></span>
-        <span
-          className={cn(
-            "border-l-4 border-l-transparent pl-2 pr-6",
-            "text-muted-foreground",
-
-            "before:mr-5 before:w-6",
-            "before:inline-block",
-            "before:text-right before:text-primary/20",
-            "before:[content:counter(lineNumber)]"
-          )}
-          style={{
-            counterIncrement: "lineNumber",
-          }}
-        >
-          //made by anthony
-        </span>
       </code>
-      <div className="def"></div>
     </pre>
   </div>
 );

@@ -1,26 +1,11 @@
-import landing_img from "./assets/landing.png";
-import pic_input_img from "./assets/pic-input.png";
-import pic_choosen_img from "./assets/pic-choosen.png";
-import pic_processing_img from "./assets/pic-processing.png";
-import context_input_img from "./assets/context-input.png";
-import context_input_completed_img from "./assets/context-input-completed.png";
-import processing_img from "./assets/processing.png";
-import finished_img from "./assets/finished.png";
-
-import upload_process_dark_img from "./assets/upload-process-dark.png";
-import upload_process_light_img from "./assets/upload-process-light.png";
-
-import { Button } from "@/components/ui/button";
-import { ImageGallery } from "@/components/image-gallery";
-import { ViewAppButton } from "@/components/view-app-button";
-import { FullImage } from "@/components/full-image";
-
-export const metadata = {
-  title: "Classhub, a social network for students",
-  description: `Here I show you the project I made for my final degree project. 
-    It is a social network for students, where they can share their notes, doubts, etc. 
-    It is made with React, Redux, NodeJS, Express, MongoDB, Socket.io, etc.`,
-};
+---
+name: "GreatPics"
+description: "Turn your pics into tweets using AI"
+url: "https://www.greatpics.app/"
+last_updated_at: 2023-10-06
+published_at: 2023-10-05
+status: "published"
+---
 
 # GreatPics
 
@@ -31,11 +16,9 @@ Great pics is a web applcation that uses AI to generate alt text for your pictur
 ## How it works
 
 <FullImage
-  image={{
-    src: upload_process_dark_img,
-    alt: "Upload image process",
-  }}
-  lightSrc={upload_process_light_img}
+  src="/assets/projects/greatpics/upload-process-dark.png"
+  alt="Upload image process"
+  lightSrc="/assets/projects/greatpics/upload-process-light.png"
 />
 
 I'm actively working on Classhub, a social network exclusively for students. At registration, the user must enter a valid university email address. This way, we can ensure that only students can register.
@@ -45,35 +28,35 @@ I'm actively working on Classhub, a social network exclusively for students. At 
 <ImageGallery
   images={[
     {
-      src: landing_img,
+      src: "/assets/projects/greatpics/landing.png",
       alt: "Landing page",
     },
     {
-      src: pic_input_img,
-      alt: "Input image",
+      src: "/assets/projects/greatpics/pic-input.png",
+      alt: "Picture input",
     },
     {
-      src: pic_choosen_img,
-      alt: "Image choosen",
+      src: "/assets/projects/greatpics/pic-choosen.png",
+      alt: "Picture choosen",
     },
     {
-      src: pic_processing_img,
-      alt: "Image processing",
+      src: "/assets/projects/greatpics/pic-processing.png",
+      alt: "Picture processing",
     },
     {
-      src: context_input_img,
+      src: "/assets/projects/greatpics/context-input.png",
       alt: "Input context",
     },
     {
-      src: context_input_completed_img,
+      src: "/assets/projects/greatpics/context-input-completed.png",
       alt: "Input context completed",
     },
     {
-      src: processing_img,
+      src: "/assets/projects/greatpics/processing.png",
       alt: "Processing",
     },
     {
-      src: finished_img,
+      src: "/assets/projects/greatpics/finished.png",
       alt: "Finished",
     },
   ]}

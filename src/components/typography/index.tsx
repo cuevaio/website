@@ -147,6 +147,8 @@ export const Typography = {
         {...props}
         className={cn("hover:underline font-mono", className, {
           "font-sans": href.startsWith("#"),
+          "md:before:content-['#'] md:before:absolute md:before:-ml-[1em] md:before:text-primary/0 md:hover:before:text-primary/50 md:pl-[1em] md:-ml-[1em] after:content-['#'] md:after:content-[''] after:absolute after:-mr-[1em] after:text-primary/0 hover:after:text-primary/50 pr-[1em] -mr-[1em]":
+            className?.includes("auto-linked-heading"),
         })}
       >
         {children}

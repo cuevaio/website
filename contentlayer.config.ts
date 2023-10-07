@@ -28,6 +28,15 @@ export default makeSource({
           prefix: "heading-",
         },
       ],
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: "wrap",
+          properties: {
+            className: "auto-linked-heading",
+          },
+        },
+      ],
       // @ts-ignore
       [rehypePrettyCode, rehypePrettyCodeOptions],
       [StyleCodeComponent],

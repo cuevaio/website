@@ -150,7 +150,7 @@ And here's what the data looks like in the UTEC Classrooms app:
 
 <FullImage
   src="/assets/projects/utec-classrooms/2023-10-03_A803.png"
-  alt="Upload image process"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
 />
 
 So, we can see that there are 8 events in the classroom A803 on October 3rd, 2023.
@@ -158,3 +158,28 @@ So, we can see that there are 8 events in the classroom A803 on October 3rd, 202
 Can you guess how many events are in the the whole campus in that day?
 
 Well, they are a lot. 201 to be exact.
+
+And that's just for one day. We need to get the events for the whole week, and then for the whole month.
+
+So, we're dealing with a lot of data.
+
+In order to get the functionality of the app, the best way to deal with this amount of data is to use a database.
+
+And that's what we did.
+
+### How did/do we get the data?
+
+To be honest, my first idea was to build a program to scrape the data from the pdf files in the Google Drive folder.
+
+But, soon, I realized that this was a bad idea. It would be very complex to do it because the pdfs have very different formats.
+
+But when I was checking the pdfs, I realized that they look like they were "printed" from a web page. (I noticed the buttons "Buscar" and "Imprimir").
+
+So, the next couple of days I spent them trying to find the web page that was used to print the pdfs.
+
+And I found it.
+
+<FullImage
+  src="/assets/projects/utec-classrooms/reserva-intranet-ss-1.png"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+/>

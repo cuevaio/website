@@ -7,7 +7,154 @@ published_at: 2023-10-05
 status: "published"
 ---
 
-
 # UTEC Classrooms
 
-hello world!
+I’m currently studying in the University of Engineering and Technology (UTEC).
+
+In the campus, there are some places we students can use to study/work outside from our enrolled classes. Such places include the library, cubicles, and classrooms with no events/classes.
+
+<aside>
+💡 from now on, we will call events to classes and any booking including manteinance, office hours, and external events that is programmed in a particular time at a particular classroom
+
+</aside>
+
+Outside every classroom there is a printed QR code that links to a Google Drive folder, that contains schedules for the events in every classroom in pdf files.
+
+<ImageGallery
+  images={[
+    {
+      src: "/assets/projects/utec-classrooms/folder-1.png",
+      alt: "Screenshot of the folder with the schedules organized by floors",
+    },
+    {
+      src: "/assets/projects/utec-classrooms/folder-2.png",
+      alt: "Screenshot of the folder with the schedules of the classrooms in the eight floor",
+    },
+    {
+      src: "/assets/projects/utec-classrooms/folder-3.png",
+      alt: "Screenshot of the schedule of the classroom A803. A pdf file.",
+    },
+  ]}
+/>
+
+This folder is updated on the weekends. So, if a new event is created on Monday, student’s won’t see it in this folder this week.
+
+So, until last week, there wasn’t a direct way to find a free classroom in campus. If a student wanted to find a free classroom, he must to check the schedules of several classrooms until he found a free one.
+
+UTEC Classrooms is the solution for this problem.
+
+Whis this web application, student’s now can see what are the free classrooms at any time.
+
+Here you’ll find some interesting problems I found while building this app and how I was able to solve them. Also, I share the stats of use, where you’ll see a great peak. I’ll explain how the app went trending and the strategies we’re following to continue growing our user base.
+
+## Data.
+
+I’ve talked with some friends and classmated about the app. And one question they all have in common is “how did you get the data?”
+
+Data is crucial to this application.
+
+First, let's see hoy many events are in a particular day in a particular classroom.
+
+### What's the amount of data we're dealing with?
+
+The following is a code snippet for getting the events in the classroom A803 on October 3rd, 2023.
+
+Note that in lines 13 and 18 we're creating datetime instances in UTC, which is 5 hours behind from the Lima, Peru datetime.
+
+```js showLineNumbers {13,18,29,30}
+import { getXataClient } from "./xata";
+let xata = getXataClient();
+
+let events = await xata.db.event
+  .select(["*", "course.name"])
+  .filter({
+    $all: [
+      {
+        "classroom.name": "A803",
+      },
+      {
+        start: {
+          $ge: new Date("2023-10-03T11:00:00Z"),
+        },
+      },
+      {
+        end: {
+          $le: new Date("2023-10-04T03:00:00Z"),
+        },
+      },
+    ],
+  })
+  .getAll();
+
+let data = events
+  .sort((a, b) => a.start.getHours() - b.start.getHours())
+  .map((e) => ({
+    name: e.name || e.course?.name,
+    start: e.start?.toLocaleTimeString("en-US", { timeZone: "America/Lima" }),
+    end: e.end?.toLocaleTimeString("en-US", { timeZone: "America/Lima" }),
+  }));
+
+console.log(data);
+```
+
+Also note that in lines 29 and 30, we're converting the datetime instances to strings using the `toLocaleTimeString` method. This is because we want to show the time in the LIma timezone.
+
+And the output is:
+
+```json
+[
+  {
+    "name": "Procesamiento y Métodos de Imágenes Biomédicas",
+    "start": "7:00:00 AM",
+    "end": "9:00:00 AM"
+  },
+  {
+    "name": "Biotransporte",
+    "start": "9:00:00 AM",
+    "end": "10:00:00 AM"
+  },
+  {
+    "name": "Laboratorio de Comunicación 2",
+    "start": "10:00:00 AM",
+    "end": "12:00:00 PM"
+  },
+  {
+    "name": "Matemáticas Discretas I",
+    "start": "12:00:00 PM",
+    "end": "2:00:00 PM"
+  },
+  {
+    "name": "Dinámica y Vibraciones",
+    "start": "2:00:00 PM",
+    "end": "4:00:00 PM"
+  },
+  {
+    "name": "Química Orgánica Aplicada",
+    "start": "4:00:00 PM",
+    "end": "6:00:00 PM"
+  },
+  {
+    "name": "Estrategia Competitiva",
+    "start": "6:00:00 PM",
+    "end": "8:00:00 PM"
+  },
+  {
+    "name": "Introducción a Sistemas Embebidos",
+    "start": "8:00:00 PM",
+    "end": "10:00:00 PM"
+  }
+]
+```
+
+And here's what the data looks like in the UTEC Classrooms app:
+
+<FullImage
+  src="/assets/projects/utec-classrooms/2023-10-03_A803.png"
+  alt="Upload image process"
+/>
+
+So, we can see that there are 8 events in the classroom A803 on October 3rd, 2023.
+
+Can you guess how many events are in the the whole campus in that day?
+
+Well, they are a lot. 201 to be exact.

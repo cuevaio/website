@@ -1,5 +1,5 @@
 import * as React from "react";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
@@ -35,7 +35,7 @@ const ImageGallery = ({ images, className, ...props }: ImageGalleryProps) => {
             alt={image.alt}
             className={cn("h-full w-full")}
           />
-          <div className="opacity-0 group-hover:opacity-100 absolute bottom-0 left-0 right-0 p-4 bg-background/70 flex items-center justify-between border-t hover:bg-background/100 transition-all">
+          <div className="opacity-0 group-hover:opacity-100 absolute bottom-0 left-0 right-0 p-4 bg-background/70 flex items-center justify-between hover:bg-background/100 transition-all">
             <p className="grow">{image.alt}</p>
             <div className="flex-0 flex space-x-2 justify-between">
               {image.link && (

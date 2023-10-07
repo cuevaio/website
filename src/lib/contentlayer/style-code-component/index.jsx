@@ -15,22 +15,22 @@ function StyleCodeComponent(options) {
     visit(
       tree,
       (node) =>
-        Boolean(
-          typeof node?.properties?.["data-rehype-pretty-code-fragment"] !==
-            "undefined"
-        ),
+        !!node.properties
+          ? "data-rehype-pretty-code-fragment" in node.properties
+          : false,
       (node) => {
         if (node.tagName === "div") {
           let code_default;
           let code_dark;
           let code_light;
-          let title;
+          let title = "";
 
           visit(
             node,
             (node) =>
-              typeof node.properties?.["data-rehype-pretty-code-title"] !==
-              "undefined",
+              !!node.properties
+                ? "data-rehype-pretty-code-title" in node.properties
+                : false,
             (div) => {
               title = div.children[0].value;
             }
@@ -41,10 +41,19 @@ function StyleCodeComponent(options) {
             (node) => node.tagName === "code",
             (code) => {
               const theme = code.properties["data-theme"] || "default";
-              const children = code.children.filter(
-                (line) =>
-                  line.children && line.children?.[0].value?.trim() !== ""
-              );
+              const children = code.children.filter((line, index, original) => {
+                if (line.children) {
+                  let content = line.children?.[0].value?.trim();
+                  if (content !== "") {
+                    return true;
+                  } else {
+                    let previous_line = original[index - 1];
+                    if (previous_line?.children?.[0]?.value?.trim() !== "") {
+                      return true;
+                    }
+                  }
+                }
+              });
               const filteredCode = { ...code, children };
               if (theme === "dark") {
                 code_dark = filteredCode;
@@ -118,7 +127,6 @@ function StyleCodeComponent(options) {
             code_components.push(code_dark);
           }
 
-
           visit(
             new_styled_block,
             (node) => node.children?.some((child) => child.tagName === "code"),
@@ -149,8 +157,13 @@ function StyleCodeComponent(options) {
                             let lines_to_add = code_component?.children?.map(
                               (line, i) => {
                                 let pc_line = get_pc_line();
-                                let styled_line = { ...pc_line };
-
+                                let styled_line = {
+                                  ...pc_line,
+                                  properties: {
+                                    ...line.properties,
+                                    ...pc_line.properties,
+                                  },
+                                };
                                 visit(
                                   styled_line,
                                   (node) =>
@@ -163,6 +176,7 @@ function StyleCodeComponent(options) {
                                       !Array.isArray(line?.children) ||
                                       line.children?.length === 0
                                     ) {
+                                      console.log("blank line");
                                       token_container["children"] =
                                         token_container["children"].filter(
                                           (child) =>

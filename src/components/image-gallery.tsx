@@ -6,6 +6,16 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Link2Icon, ZoomInIcon } from "@radix-ui/react-icons";
 
+async function importImage(relativePath: string) {
+  try {
+    const imageFile = await import("../../public" + relativePath);
+    return imageFile;
+  } catch (error) {
+    console.error(`Error importing file "${relativePath}": ${error}`);
+    throw error;
+  }
+}
+
 interface ImageGalleryProps extends React.HTMLProps<HTMLDivElement> {
   images: {
     src: string;
@@ -14,11 +24,22 @@ interface ImageGalleryProps extends React.HTMLProps<HTMLDivElement> {
   }[];
 }
 
-const ImageGallery = ({ images, className, ...props }: ImageGalleryProps) => {
+const ImageGallery = async ({
+  images,
+  className,
+  ...props
+}: ImageGalleryProps) => {
+  let imageFiles = await Promise.all(
+    images.map(async (image) => ({
+      src: image.src,
+      imageFile: await importImage(image.src),
+    }))
+  );
+
   return (
     <div
       className={cn(
-        "h-[75vh] overflow-auto my-8 bg-primary-foreground border rounded-lg p-4 flex gap-4 relative md:w-[75vw] -translate-x-1/2 left-1/2",
+        "h-[50vh] md:h-[75vh] overflow-auto my-8 bg-primary-foreground border rounded-lg p-4 flex gap-4 relative md:w-[75vw] -translate-x-1/2 left-1/2",
         className
       )}
       {...props}
@@ -31,7 +52,7 @@ const ImageGallery = ({ images, className, ...props }: ImageGalleryProps) => {
           <Image
             width={1900}
             height={1080}
-            src={image.src}
+            src={imageFiles.find((f) => f.src === image.src)?.imageFile}
             alt={image.alt}
             className={cn("h-full w-full")}
           />

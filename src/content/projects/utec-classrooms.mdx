@@ -9,16 +9,17 @@ status: "published"
 
 # UTEC Classrooms
 
-I’m currently studying in the University of Engineering and Technology (UTEC).
+I am currently studying at the University of Engineering and Technology (UTEC).
 
-In the campus, there are some places we students can use to study/work outside from our enrolled classes. Such places include the library, cubicles, and classrooms with no events/classes.
+On campus, there are some places where students can study or work outside of their enrolled classes. These places include the library, cubicles, and classrooms without scheduled events or classes.
 
-<aside>
-💡 from now on, we will call events to classes and any booking including manteinance, office hours, and external events that is programmed in a particular time at a particular classroom
+<Aside emoji="💡">
+  From now on, we will refer to classes and any bookings, including maintenance,
+  office hours, and external events that are scheduled in specific classrooms,
+  as `events`.
+</Aside>
 
-</aside>
-
-Outside every classroom there is a printed QR code that links to a Google Drive folder, that contains schedules for the events in every classroom in pdf files.
+Outside every classroom, there is a printed QR code that links to a Google Drive folder containing schedules for events in each classroom in PDF files.
 
 <ImageGallery
   images={[
@@ -37,29 +38,30 @@ Outside every classroom there is a printed QR code that links to a Google Drive 
   ]}
 />
 
-This folder is updated on the weekends. So, if a new event is created on Monday, student’s won’t see it in this folder this week.
+This folder is updated on weekends. So, if a new event is created on Monday, students won't see it in the folder until the following week.
 
-So, until last week, there wasn’t a direct way to find a free classroom in campus. If a student wanted to find a free classroom, he must to check the schedules of several classrooms until he found a free one.
+Until recently, there was no direct way to find a free classroom on campus. If a student wanted to find one, they had to check the schedules of several classrooms until they found an available one.
 
-UTEC Classrooms is the solution for this problem.
+UTEC Classrooms is the solution to this problem.
 
-Whis this web application, student’s now can see what are the free classrooms at any time.
+With this web application, students can now easily see which classrooms are free at any given time.
 
-Here you’ll find some interesting problems I found while building this app and how I was able to solve them. Also, I share the stats of use, where you’ll see a great peak. I’ll explain how the app went trending and the strategies we’re following to continue growing our user base.
+In this article, I'll discuss some interesting challenges I encountered while building this app and how I overcame them. Additionally, I'll share user engagement statistics, including a significant peak, and explain the strategies we're employing to continue expanding our user base.
 
-## Data.
+## Data
 
-I’ve talked with some friends and classmated about the app. And one question they all have in common is “how did you get the data?”
+I've spoken with some friends and classmates about the app, and one question they all have in common is, "How did you get the data?"
 
-Data is crucial to this application.
+Data is crucial for this application.
 
-First, let's see hoy many events are in a particular day in a particular classroom.
+First, let's examine how much data we're dealing with.
 
-### What's the amount of data we're dealing with?
+The following code snippet retrieves the events in classroom A803 on October 3rd, 2023.
 
-The following is a code snippet for getting the events in the classroom A803 on October 3rd, 2023.
-
-Note that in lines 13 and 18 we're creating datetime instances in UTC, which is 5 hours behind from the Lima, Peru datetime.
+<Aside emoji="👀">
+  Note that in lines 13 and 18, we're creating datetime instances in UTC, which
+  is 5 hours behind Lima timezone.
+</Aside>
 
 ```js showLineNumbers {13,18,29,30}
 import { getXataClient } from "./xata";
@@ -146,40 +148,669 @@ And the output is:
 ]
 ```
 
-And here's what the data looks like in the UTEC Classrooms app:
+Here's what the data looks like in the UTEC Classrooms app:
 
 <FullImage
   src="/assets/projects/utec-classrooms/2023-10-03_A803.png"
   alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+  mobile
 />
 
-So, we can see that there are 8 events in the classroom A803 on October 3rd, 2023.
+As you can see, there are 8 events in classroom A803 on October 3rd, 2023.
 
-Can you guess how many events are in the the whole campus in that day?
+Can you guess how many events are happening across the entire campus that day? Well, there are a lot—201 events, to be exact. And that's just for one day. We need to retrieve events for the entire week and month, so we're dealing with a substantial amount of data.
 
-Well, they are a lot. 201 to be exact.
+To efficiently handle this volume of data, we've opted to use a database, which brings us to the next question:
 
-And that's just for one day. We need to get the events for the whole week, and then for the whole month.
+How Do We Retrieve the Data?
+Initially, my idea was to build a program to scrape data from the PDF files in the Google Drive folder. However, I soon realized this was a challenging task due to the varied PDF formats.
 
-So, we're dealing with a lot of data.
+While examining the PDFs, I noticed that they appeared to be "printed" from a web page (I observed the "Buscar" and "Imprimir" buttons).
 
-In order to get the functionality of the app, the best way to deal with this amount of data is to use a database.
-
-And that's what we did.
-
-### How did/do we get the data?
-
-To be honest, my first idea was to build a program to scrape the data from the pdf files in the Google Drive folder.
-
-But, soon, I realized that this was a bad idea. It would be very complex to do it because the pdfs have very different formats.
-
-But when I was checking the pdfs, I realized that they look like they were "printed" from a web page. (I noticed the buttons "Buscar" and "Imprimir").
-
-So, the next couple of days I spent them trying to find the web page that was used to print the pdfs.
-
-And I found it.
+Over the next few days, I searched for the web page used to generate these PDFs, and I found it:
 
 <FullImage
   src="/assets/projects/utec-classrooms/reserva-intranet-ss-1.png"
   alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
 />
+
+It turns out that there's a web app at `reserva-intranet.utec.edu.pe`, accessible only to signed-in users. In the `/reserva/calendarioaula` route, users can select a classroom, click "Buscar," and within seconds, the app displays the events in that classroom.
+
+I decided to reverse engineer this process:
+
+<FullImage
+  src="/assets/projects/utec-classrooms/fetch-request-utec-api.gif"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+/>
+
+When clicking the `Buscar` button, the app makes a `GET` request to retrieve the events. I wanted to replicate this request from outside `reserva-intranet.utec.edu.pe`, so I tried making the request in [Hoppscotch](https://hoppscotch.io/).
+
+<FullImage
+  src="/assets/projects/utec-classrooms/request-hoppscotch.gif"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+/>
+
+JSON Response:
+
+```json
+{
+  "timestamp": 1696782429333,
+  "uuid": "c682f113-7626-4678-8154-ec8d1de6fdf6",
+  "status": 401,
+  "message": "Token validation failed. Validation endpoint return an error code [9006] with this message [Parameter was not found in request. X-Auth-Token is required.]. Operation id [871d83d0-65f7-11ee-bdd4-0242ac11000b]",
+  "managed": true
+}
+```
+
+However, the request failed because we didn't send the `X-Auth-Token` header. To obtain this token, I examined the headers of the original request:
+
+<FullImage
+  src="/assets/projects/utec-classrooms/fetch-request-utec-api-headers.png"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+/>
+
+I copied the token and added it to our request in Hoppscotch:
+
+<FullImage
+  src="/assets/projects/utec-classrooms/request-hoppscotch-ok.gif"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+/>
+
+JSON Response:
+
+```json
+{
+  "timestamp": 1696783004369,
+  "uuid": null,
+  "status": 200,
+  "error": null,
+  "message": "OK",
+  "managed": true,
+  "content": [
+    {
+      "title": "RESERVADO",
+      "start": "08/09/2023 18:00",
+      "end": "08/09/2023 20:00"
+    },
+    // ...
+    // many more events
+    // ...
+    {
+      "title": "IQ2001-Química Orgánica Aplicada - Sec.1 - TEO - Grupo 1 - Docente\tJuan Carlos Rodríguez",
+      "start": "07/11/2023 16:00",
+      "end": "07/11/2023 18:00"
+    }
+  ]
+}
+```
+
+Ok. Now we have the same data as in the request we're trying to replicate. Let's see how we can change the parameters of the request.
+
+First, let's analyze them. The params are the following:
+
+- `codaula`: the code of the classroom. `1622`?
+- `fechainicial`: the start date of the events. In this case, `08/09/2023`
+- `fechafinal`: the end date of the events. In this case, `08/11/2023`
+
+Ok. Aparently, classroom A803 has the 1622 code. Later we'll find out where this code comes from.
+
+Before that, let's try changing the start and end dates.
+
+<FullImage
+  src="/assets/projects/utec-classrooms/request-hoppscotch-ok-03-10.gif"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+/>
+
+JSON Response:
+
+```json
+{
+  "timestamp": 1696784734935,
+  "uuid": null,
+  "status": 200,
+  "error": null,
+  "message": "OK",
+  "managed": true,
+  "content": [
+    {
+      "title": ":Mantenimiento TI",
+      "start": "04/10/2023 13:00",
+      "end": "04/10/2023 15:00"
+    },
+    {
+      "title": "BI0034-Procesamiento y Métodos de Imágenes Biomédicas - Sec.1 - TEO - Grupo 1 - Docente\tPedro Crisostomo",
+      "start": "03/10/2023 07:00",
+      "end": "03/10/2023 09:00"
+    },
+    {
+      "title": "AD3011-Estrategia Competitiva - Sec.1 - TEO - Grupo 1 - Docente\tManuel Leonardo Toro",
+      "start": "03/10/2023 18:00",
+      "end": "03/10/2023 20:00"
+    },
+    {
+      "title": "HH2102-Economía, Gobernanza y Relaciones de Poder - Sec.9 - TEO - Grupo 9 - Docente\tGiancarlo Espinoza",
+      "start": "04/10/2023 15:00",
+      "end": "04/10/2023 16:00"
+    },
+    {
+      "title": "EL3014-Introducción a Sistemas Embebidos - Sec.2 - TEO - Grupo 2 - Docente\tLuz Adanaque",
+      "start": "03/10/2023 20:00",
+      "end": "03/10/2023 22:00"
+    },
+    {
+      "title": "EL3014-Introducción a Sistemas Embebidos - Sec.2 - TEO - Grupo 2 - Docente\tLuz Adanaque",
+      "start": "04/10/2023 20:00",
+      "end": "04/10/2023 22:00"
+    },
+    {
+      "title": "AM3001-Hidrología - Sec.1 - TEO - Grupo 1 - Docente\tHarold Omar Llauca",
+      "start": "04/10/2023 10:00",
+      "end": "04/10/2023 11:00"
+    },
+    {
+      "title": "CI2012-Dinámica y Vibraciones - Sec.1 - TEO - Grupo 1 - Docente\tRick Milton Delgadillo",
+      "start": "03/10/2023 14:00",
+      "end": "03/10/2023 16:00"
+    },
+    {
+      "title": "ME2013-Estática - Sec.2 - TEO - Grupo 2 - Docente\tDavy Olivera",
+      "start": "04/10/2023 11:00",
+      "end": "04/10/2023 13:00"
+    },
+    {
+      "title": "IN0077-Gestión de Compras y Mercados Electrónicos - Sec.1 - TEO - Grupo 1 - Docente\tLuis Gomez",
+      "start": "04/10/2023 09:00",
+      "end": "04/10/2023 10:00"
+    },
+    {
+      "title": "HH1102-Laboratorio de Comunicación 2 - Sec.9 - TEO - Grupo 9 - Docente\tCamila Chacon",
+      "start": "03/10/2023 10:00",
+      "end": "03/10/2023 12:00"
+    },
+    {
+      "title": "BI0005-Biotransporte - Sec.1 - TEO - Grupo 1 - Docente\tPaul Cardenas",
+      "start": "03/10/2023 09:00",
+      "end": "03/10/2023 10:00"
+    },
+    {
+      "title": "CC1105-Estadística y Probabilidades I - Sec.11 - TEO - Grupo 11 - Docente\tJessica Cleofe Muñoz",
+      "start": "04/10/2023 16:00",
+      "end": "04/10/2023 18:00"
+    },
+    {
+      "title": "CC1105-Estadística y Probabilidades I - Sec.14 - TEO - Grupo 14 - Docente\tJessica Cleofe Muñoz",
+      "start": "04/10/2023 18:00",
+      "end": "04/10/2023 19:00"
+    },
+    {
+      "title": "CS1021-Matemáticas Discretas I - Sec.5 - TEO - Grupo 5 - Docente\tJorge Tipe",
+      "start": "03/10/2023 12:00",
+      "end": "03/10/2023 14:00"
+    },
+    {
+      "title": "IQ2001-Química Orgánica Aplicada - Sec.1 - TEO - Grupo 1 - Docente\tJuan Carlos Rodríguez",
+      "start": "03/10/2023 16:00",
+      "end": "03/10/2023 18:00"
+    }
+  ]
+}
+```
+
+As expected, the response changed. Now we're getting the events for October 3rd and 4th of 2023.
+
+So, we can conclude that the `fechainicial` and `fechafinal` params are the start and end dates of the events.
+
+Now, let's find out where the `codaula` param comes from.
+
+<Aside emoji="🚀">
+  As you can see now, in order to understand how this app is designed, we need
+  to interact a lot with it and keep track of what's happening behind the scenes
+  (with the requests, logs, etc). It is known as{" "}
+  <strong>reverse engineering</strong>.
+</Aside>
+
+Let's reload the page, clear the network tab, and select `Aulas` in `Tipo de Ambiente`.
+
+<FullImage
+  src="/assets/projects/utec-classrooms/fetch-request-utec-api-aulas.gif"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+/>
+
+A request is made to `https://api.utec.edu.pe/reserva-api/filtro/aula/reservable/tipoaula`. With the query params `codsede=2&codtipoaula=41`
+
+JSON Response
+
+```json showLineNumbers {89-92}
+{
+  "timestamp": 1696785539271,
+  "uuid": null,
+  "status": 200,
+  "error": null,
+  "message": "OK",
+  "managed": true,
+  "content": [
+    {
+      "codAula": 2668,
+      "nomAliasAula": "A101(40)"
+    },
+    {
+      "codAula": 2670,
+      "nomAliasAula": "A201(18)"
+    },
+    {
+      "codAula": 2671,
+      "nomAliasAula": "A202(12)"
+    },
+    {
+      "codAula": 2672,
+      "nomAliasAula": "A203(24)"
+    },
+    {
+      "codAula": 2673,
+      "nomAliasAula": "A401(20)"
+    },
+    {
+      "codAula": 2674,
+      "nomAliasAula": "A402(23)"
+    },
+    {
+      "codAula": 1650,
+      "nomAliasAula": "A501(30)"
+    },
+    {
+      "codAula": 2730,
+      "nomAliasAula": "A502(16)"
+    },
+    {
+      "codAula": 2675,
+      "nomAliasAula": "A601(28)"
+    },
+    {
+      "codAula": 2676,
+      "nomAliasAula": "A602(23)"
+    },
+    {
+      "codAula": 1619,
+      "nomAliasAula": "A701(45)"
+    },
+    {
+      "codAula": 1625,
+      "nomAliasAula": "A702(45)"
+    },
+    {
+      "codAula": 1628,
+      "nomAliasAula": "A703(46)"
+    },
+    {
+      "codAula": 1621,
+      "nomAliasAula": "A704(45)"
+    },
+    {
+      "codAula": 1624,
+      "nomAliasAula": "A705(45)"
+    },
+    {
+      "codAula": 1634,
+      "nomAliasAula": "A706(45)"
+    },
+    {
+      "codAula": 1636,
+      "nomAliasAula": "A707(45)"
+    },
+    {
+      "codAula": 1630,
+      "nomAliasAula": "A708(45)"
+    },
+    {
+      "codAula": 1627,
+      "nomAliasAula": "A801(47)"
+    },
+    {
+      "codAula": 1626,
+      "nomAliasAula": "A802(45)"
+    },
+    {
+      "codAula": 1622,
+      "nomAliasAula": "A803(47)"
+    },
+    {
+      "codAula": 1620,
+      "nomAliasAula": "A804(45)"
+    },
+    {
+      "codAula": 1639,
+      "nomAliasAula": "A901(46)"
+    },
+    {
+      "codAula": 1638,
+      "nomAliasAula": "A902(45)"
+    },
+    {
+      "codAula": 1637,
+      "nomAliasAula": "A903(45)"
+    },
+    {
+      "codAula": 1644,
+      "nomAliasAula": "A904(47)"
+    },
+    {
+      "codAula": 1643,
+      "nomAliasAula": "A905(45)"
+    },
+    {
+      "codAula": 1642,
+      "nomAliasAula": "A906(45)"
+    },
+    {
+      "codAula": 1641,
+      "nomAliasAula": "A907(45)"
+    },
+    {
+      "codAula": 2677,
+      "nomAliasAula": "A908(45)"
+    }
+  ]
+}
+```
+
+The response object has a `content` property, which is an array of objects. Each object has a `codAula` property, which is an id for the classroom, and a `nomAliasAula` property, which is the name of the classroom.
+
+In lines 89-92, we can see that the classroom `A803` has the id `1622`.
+
+We can use this data to programmatically get the events for a particular classroom.
+
+Want to get the events for the classroom `A101` on October 10rd, 2023?
+
+Here's the code:
+
+```js
+const queryparams = new URLSearchParams({
+  codaula: "2668",
+  fechainicial: "10/10/2023",
+  fechafinal: "10/10/2023",
+});
+
+const utec_token =
+  "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2OTY3OTU3NDcsInN1YiI6ImFudGhvbnkuY3VldmFAdXRlYy5lZHUucGUiLCJhdWRpZW5jZSI6InVuZGV0ZXJtaW5lZCIsImNyZWF0ZWQiOjE2OTY3ODEzNDcyMjl9.MBxsR-q3MkDpSXEEzEIXJPY6u9122h5RL7KxlbA7zKSTxTUhTPrejAJpFmDPvnq4O_Fx3xsVyt-WYROMoDGs6w";
+
+try {
+  const response = await fetch(
+    `https://api.utec.edu.pe/reserva-api/calendarioaula/eventos?${queryparams.toString()}`,
+    {
+      method: "GET",
+      headers: {
+        "X-Auth-Token": utec_token,
+      },
+    }
+  );
+  const data = await response.json();
+  console.log(data);
+} catch (error) {
+  console.error(error);
+}
+```
+
+### Where do we store the data?
+
+Ok. Now we know how to get the data. But, where do we store it?
+
+We're using [Xata](https://xata.io) for this project. It's my go-to database service since I discovered it.
+
+<FullImage
+  src="/assets/projects/utec-classrooms/xata-io.png"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+/>
+
+To begin, we need to create a new workspace for the project. We'll call it `utec-classrooms`. Then, we need to create a new database. We'll call it `utec-classrooms` (not very creative, I know). And finally, we need to define the schema for the database.
+
+<FullImage
+  src="/assets/projects/utec-classrooms/xata-schema.png"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+/>
+
+<Aside emoji="🔥">
+  Xata has a very intuitive UI for defining the schema of a database.
+</Aside>
+
+The JSON representation of this schema is the following:
+
+```json showLineNumbers {4,31,47,68}
+{
+  "tables": [
+    {
+      "name": "classroom",
+      "columns": [
+        {
+          "name": "max",
+          "type": "int",
+          "notNull": true,
+          "defaultValue": "0"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "unique": true
+        },
+        {
+          "name": "code",
+          "type": "int",
+          "unique": true
+        }
+      ],
+      "revLinks": [
+        {
+          "column": "classroom",
+          "table": "event"
+        }
+      ]
+    },
+    {
+      "name": "host",
+      "columns": [
+        {
+          "name": "name",
+          "type": "string",
+          "unique": true
+        }
+      ],
+      "revLinks": [
+        {
+          "column": "host",
+          "table": "event"
+        }
+      ]
+    },
+    {
+      "name": "course",
+      "columns": [
+        {
+          "name": "name",
+          "type": "string",
+          "defaultValue": "error"
+        },
+        {
+          "name": "code",
+          "type": "string",
+          "unique": true
+        }
+      ],
+      "revLinks": [
+        {
+          "column": "course",
+          "table": "event"
+        }
+      ]
+    },
+    {
+      "name": "event",
+      "columns": [
+        {
+          "name": "course",
+          "type": "link",
+          "link": {
+            "table": "course"
+          }
+        },
+        {
+          "name": "host",
+          "type": "link",
+          "link": {
+            "table": "host"
+          }
+        },
+        {
+          "name": "classroom",
+          "type": "link",
+          "link": {
+            "table": "classroom"
+          }
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "start",
+          "type": "datetime"
+        },
+        {
+          "name": "end",
+          "type": "datetime"
+        }
+      ]
+    }
+  ]
+}
+```
+
+- `classroom`: represents a classroom. It has a `name` and a `code`. The `code` is the id we saw earlier.
+- `host`: represents the host of the event. It has a `name`.
+- `course`: represents the course of the event. It has a `name` and a `code`.
+- `event`: represents an event. It has a `name`, a `start` datetime, an `end` datetime, a `classroom`, a `host`, and a `course` references.
+
+Most of the events are classes for courses. However, there are also events for maintenance, office hours, and external events.
+
+The classes will be stored in the `course` table. And we can reference them in the `event` table using the `course` column.
+
+### Storing the data
+
+The hole project is developed in [SvelteKit](https://kit.svelte.dev/). It's a framework for building web applications.
+
+This post isn't intended to be a tutorial on how to do replicate this project. The full source code is available on [GitHub](https://github.com/cuevantn/utec-classrooms). You can check it out if you want to learn more about how I built this app.
+
+But, I'll show you how some interesting parts of the code.
+
+First, let's check the `src/routes/api/refresh/+server.js` file:
+
+```js
+// ...
+export async function POST({ url }) {
+	try {
+		let classroom_name = url.searchParams.get('classroom_name') ?? 'A101';
+		let utec_token = url.searchParams.get('utec_token') ?? UTEC_TOKEN;
+
+		let classroom = await xata.db.classroom.filter({ name: classroom_name }).getFirstOrThrow();
+
+		if (!classroom.code) {
+			throw new Error(`Classroom ${classroom_name} xata record has no code.`);
+		}
+// ...
+```
+
+As you can guess, here we're definit an API route. It's a `POST` route, and receives two query params: `classroom_name` and `utec_token`.
+
+- `classroom_name`: the name of the classroom. `A101` by default.
+- `utec_token`: a token to authenticate with the UTEC API.
+
+We're using the `xata` client to query the database. We're filtering the `classroom` table by the `name` column, and getting the first record. If there's no record, we throw an error.
+
+```js
+// ...
+let queryparams = new URLSearchParams({
+  codaula: String(classroom.code),
+  fechainicial: todayMinus3.toLocaleDateString("en-GB", {
+    timeZone: "America/Lima",
+  }),
+  fechafinal: todayPlus7.toLocaleDateString("en-GB", {
+    timeZone: "America/Lima",
+  }),
+});
+
+let response = await fetch(
+  `https://api.utec.edu.pe/reserva-api/calendarioaula/eventos?${queryparams.toString()}`,
+  {
+    method: "GET",
+    headers: {
+      "X-Auth-Token": utec_token,
+    },
+  }
+);
+
+if (!response.ok) {
+  throw new Error(`UTEC API returned ${response.status}`);
+}
+
+let data = await response.json();
+// ...
+```
+
+In order to obtain the events, we need to make a request to the UTEC API. We're using the `fetch` API to make the request. We're retrieving the events for the classroom from 3 days ago to 7 days from now.
+
+```js
+// ...
+let existing_events_page = await xata.db.event
+  .select(["*", "course.*", "host.*", "classroom.*"])
+  .filter({
+    $all: [
+      {
+        "classroom.id": classroom.id,
+      },
+      {
+        start: {
+          $ge: todayMinus5,
+        },
+      },
+      {
+        end: {
+          $le: todayPlus9,
+        },
+      },
+    ],
+  })
+  .getPaginated({
+    pagination: {
+      size: 200,
+    },
+  });
+// ...
+```
+
+To avoid, duplicates, we first query the database to retrieve the events in that classroom between 5 days ago and 9 days from now.
+
+After that, some filters are applied to the data. The new events are parsed and stored in the database.
+
+```js
+// ...
+let created_events = await xata.db.event.create(
+  events_to_create.filter((e) => e !== null)
+);
+
+return new Response(
+  JSON.stringify({
+    created: created_events.length,
+  }),
+  {
+    status: 200,
+  }
+);
+// ...
+```
+
+If we apply the same process to all the classrooms (as done in the `/api/robot` route), out database will look like this:
+
+<FullImage
+  src="/assets/projects/utec-classrooms/xata-events-data.png"
+  alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
+/>
+
+## Algorithm

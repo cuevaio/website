@@ -63,10 +63,7 @@ function renderHeadings(headings: HeadingsTree) {
       <React.Fragment key={heading.id}>
         <li className="my-2 sm:my-3">
           <SheetClose asChild>
-            <a
-              href={`#${heading.id}`}
-              className="font-medium hover:underline"
-            >
+            <a href={`#${heading.id}`} className="font-medium hover:underline">
               {heading.text}
             </a>
           </SheetClose>

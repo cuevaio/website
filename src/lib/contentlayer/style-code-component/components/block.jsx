@@ -49,10 +49,10 @@ const DefaultStyledCodeBlockComponent = ({ title }) => (
           className={cn(
             "border-l-4 border-l-transparent pl-2 pr-6",
 
-            "before:mr-5 before:ml-1.5 before:w-6",
-            "before:inline-block",
-            "before:text-right before:text-primary/20",
-            "before:[content:counter(lineNumber)]",
+            "group-data-[line-numbers]:before:inline-block",
+            "group-data-[line-numbers]:before:mr-5 before:ml-1.5 before:w-6",
+            "group-data-[line-numbers]:before:text-right before:text-primary/20",
+            "group-data-[line-numbers]:before:[content:counter(lineNumber)]",
 
             "data-[highlighted-line]:bg-primary/10",
             "data-[highlighted-line]:border-l-primary",

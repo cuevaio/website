@@ -176,7 +176,6 @@ function StyleCodeComponent(options) {
                                       !Array.isArray(line?.children) ||
                                       line.children?.length === 0
                                     ) {
-                                      console.log("blank line");
                                       token_container["children"] =
                                         token_container["children"].filter(
                                           (child) =>

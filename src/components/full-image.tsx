@@ -57,6 +57,8 @@ const FullImage = async ({
         className={cn("rounded-lg w-full h-full", {
           "opacity-0 dark:opacity-100": lightSrc,
         })}
+        blurDataURL={rgbDataURL(23, 23, 23)}
+        placeholder="blur"
       />
       {lightSrc && (
         <div

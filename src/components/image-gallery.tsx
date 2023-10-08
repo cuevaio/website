@@ -6,16 +6,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Link2Icon, ZoomInIcon } from "@radix-ui/react-icons";
 
-async function importImage(relativePath: string) {
-  try {
-    const imageFile = await import("../../public" + relativePath);
-    return imageFile;
-  } catch (error) {
-    console.error(`Error importing file "${relativePath}": ${error}`);
-    throw error;
-  }
-}
-
 interface ImageGalleryProps extends React.HTMLProps<HTMLDivElement> {
   images: {
     src: string;
@@ -29,13 +19,6 @@ const ImageGallery = async ({
   className,
   ...props
 }: ImageGalleryProps) => {
-  let imageFiles = await Promise.all(
-    images.map(async (image) => ({
-      src: image.src,
-      imageFile: await importImage(image.src),
-    }))
-  );
-
   return (
     <div
       className={cn(
@@ -50,9 +33,9 @@ const ImageGallery = async ({
           key={i}
         >
           <Image
-            width={1900}
+            width={1080}
             height={1080}
-            src={imageFiles.find((f) => f.src === image.src)?.imageFile}
+            src={image.src}
             alt={image.alt}
             className={cn("h-full w-full")}
           />

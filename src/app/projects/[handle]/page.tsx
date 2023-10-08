@@ -5,7 +5,7 @@ import { MDXComponents } from "@/components/mdx-components";
 
 export async function generateStaticParams() {
   return allProjects.map((post) => ({
-    handle: post._raw.sourceFileName.replace(".mdx", "")
+    handle: post._raw.sourceFileName.replace(".mdx", ""),
   }));
 }
 

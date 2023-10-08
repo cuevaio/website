@@ -3,6 +3,12 @@ import { Post, allPosts } from "content";
 import { notFound } from "next/navigation";
 import { MDXComponents } from "@/components/mdx-components";
 
+export async function generateStaticParams() {
+  return allPosts.map((post) => ({
+    handle: post._raw.sourceFileName.replace(".mdx", ""),
+  }));
+}
+
 const Post = ({ post }: { post: Post }) => {
   const MDXContent = useMDXComponent(post.body.code);
 

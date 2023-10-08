@@ -6,15 +6,19 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Link2Icon, ZoomInIcon } from "@radix-ui/react-icons";
 
-async function importImage(relativePath: string) {
-  try {
-    const imageFile = await import("../../public" + relativePath);
-    return imageFile;
-  } catch (error) {
-    console.error(`Error importing file "${relativePath}": ${error}`);
-    throw error;
-  }
-}
+const keyStr =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+const triplet = (e1: number, e2: number, e3: number) =>
+  keyStr.charAt(e1 >> 2) +
+  keyStr.charAt(((e1 & 3) << 4) | (e2 >> 4)) +
+  keyStr.charAt(((e2 & 15) << 2) | (e3 >> 6)) +
+  keyStr.charAt(e3 & 63);
+
+const rgbDataURL = (r: number, g: number, b: number) =>
+  `data:image/gif;base64,R0lGODlhAQABAPAA${
+    triplet(0, r, g) + triplet(b, 255, 255)
+  }/yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==`;
 
 interface FullImageProps extends React.HTMLProps<HTMLDivElement> {
   src: string;
@@ -33,7 +37,6 @@ const FullImage = async ({
   className,
   ...props
 }: FullImageProps) => {
-  let imageFile = await importImage(src);
   return (
     <div
       className={cn(
@@ -47,9 +50,9 @@ const FullImage = async ({
       {...props}
     >
       <Image
-        width={1920}
+        width={1080}
         height={1080}
-        src={imageFile}
+        src={src}
         alt={alt}
         className={cn("rounded-lg w-full h-full", {
           "opacity-0 dark:opacity-100": lightSrc,

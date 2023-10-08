@@ -9,7 +9,6 @@ const Aside = ({
   emoji = "👋",
   ...props
 }: AsideProps): React.ReactNode => {
-  console.log(children);
   return (
     <aside
       {...props}

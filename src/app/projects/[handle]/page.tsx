@@ -3,6 +3,12 @@ import { allProjects, Project } from "content";
 import { notFound } from "next/navigation";
 import { MDXComponents } from "@/components/mdx-components";
 
+export async function generateStaticParams() {
+  return allProjects.map((post) => ({
+    handle: post._raw.sourceFileName.replace(".mdx", "")
+  }));
+}
+
 const Project = ({ project }: { project: Project }) => {
   const MDXContent = useMDXComponent(project.body.code);
 

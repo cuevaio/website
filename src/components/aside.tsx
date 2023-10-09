@@ -12,7 +12,7 @@ const Aside = ({
   return (
     <aside
       {...props}
-      className="relative bg-gradient-to-r dark:from-lime-900 dark:to-green-900 from-lime-100 to-green-100 p-4 rounded-lg my-4"
+      className="relative bg-gradient-to-r dark:from-lime-900 dark:to-green-900 from-lime-100 to-green-100 p-4 rounded-lg mt-8 mb-4"
     >
       <div className="absolute w-10 h-10 -top-4 -left-4 flex items-center justify-center text-xl rounded-full dark:bg-lime-900 bg-lime-100">
         {emoji}

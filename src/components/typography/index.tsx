@@ -87,7 +87,7 @@ export const Typography = {
     className,
     ...props
   }: React.HTMLAttributes<HTMLUListElement>): React.ReactNode => (
-    <ul {...props} className="list-none">
+    <ul {...props} className="list-none my-4">
       {children}
     </ul>
   ),
@@ -97,7 +97,7 @@ export const Typography = {
     className,
     ...props
   }: React.HTMLAttributes<HTMLOListElement>): React.ReactNode => (
-    <ol {...props} className={cn("list-decimal list-inside", className)}>
+    <ol {...props} className={cn("list-decimal list-inside my-4", className)}>
       {children}
     </ol>
   ),

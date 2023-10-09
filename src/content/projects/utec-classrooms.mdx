@@ -68,7 +68,7 @@ import { getXataClient } from "./xata";
 let xata = getXataClient();
 
 let events = await xata.db.event
-  .select(["*", "course.name"])
+  .select(["name", "course.name", "start", "end"])
   .filter({
     $all: [
       {
@@ -76,12 +76,12 @@ let events = await xata.db.event
       },
       {
         start: {
-          $ge: new Date("2023-10-03T11:00:00Z"),
+          $ge: new Date("2023-10-03T11:00:00Z"), // October 3rd, 6:00 AM in Lima
         },
       },
       {
         end: {
-          $le: new Date("2023-10-04T03:00:00Z"),
+          $le: new Date("2023-10-04T03:00:00Z"), // October 3rd, 10:00 PM in Lima
         },
       },
     ],
@@ -162,7 +162,8 @@ Can you guess how many events are happening across the entire campus that day? W
 
 To efficiently handle this volume of data, we've opted to use a database, which brings us to the next question:
 
-How Do We Retrieve the Data?
+### How Do We Retrieve the Data?
+
 Initially, my idea was to build a program to scrape data from the PDF files in the Google Drive folder. However, I soon realized this was a challenging task due to the varied PDF formats.
 
 While examining the PDFs, I noticed that they appeared to be "printed" from a web page (I observed the "Buscar" and "Imprimir" buttons).
@@ -176,7 +177,14 @@ Over the next few days, I searched for the web page used to generate these PDFs,
 
 It turns out that there's a web app at `reserva-intranet.utec.edu.pe`, accessible only to signed-in users. In the `/reserva/calendarioaula` route, users can select a classroom, click "Buscar," and within seconds, the app displays the events in that classroom.
 
-I decided to reverse engineer this process:
+<Aside emoji="🚀">
+  As you will see bellow, in order to understand how this app is designed, we
+  need to interact a lot with it and keep track of what's happening behind the
+  scenes (with the requests, logs, etc). This process is known as **reverse
+  engineering**.
+</Aside>
+
+Let's reverse engineer this app.
 
 <FullImage
   src="/assets/projects/utec-classrooms/fetch-request-utec-api.gif"
@@ -202,14 +210,14 @@ JSON Response:
 }
 ```
 
-However, the request failed because we didn't send the `X-Auth-Token` header. To obtain this token, I examined the headers of the original request:
+However, the request <span id="how-to-get-the-token">failed</span> because we didn't send the `X-Auth-Token` header.
 
 <FullImage
   src="/assets/projects/utec-classrooms/fetch-request-utec-api-headers.png"
   alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
 />
 
-I copied the token and added it to our request in Hoppscotch:
+We can find this token as a header in the original request. We can copy and add it to our request in Hoppscotch:
 
 <FullImage
   src="/assets/projects/utec-classrooms/request-hoppscotch-ok.gif"
@@ -244,17 +252,17 @@ JSON Response:
 }
 ```
 
-Ok. Now we have the same data as in the request we're trying to replicate. Let's see how we can change the parameters of the request.
+So far, so good! We know how to retrieve data from any client (not just `reserva-intranet.utec.edu.pe`) by making a request.
 
-First, let's analyze them. The params are the following:
+Now, let's discover how we can modify the request to obtain only the data we need.
+
+The only variables that change here are the query parameters, which are as follows:
 
 - `codaula`: the code of the classroom. `1622`?
 - `fechainicial`: the start date of the events. In this case, `08/09/2023`
 - `fechafinal`: the end date of the events. In this case, `08/11/2023`
 
-Ok. Aparently, classroom A803 has the 1622 code. Later we'll find out where this code comes from.
-
-Before that, let's try changing the start and end dates.
+Let's try changing the start and end dates.
 
 <FullImage
   src="/assets/projects/utec-classrooms/request-hoppscotch-ok-03-10.gif"
@@ -263,7 +271,7 @@ Before that, let's try changing the start and end dates.
 
 JSON Response:
 
-```json
+```json {15}
 {
   "timestamp": 1696784734935,
   "uuid": null,
@@ -282,71 +290,8 @@ JSON Response:
       "start": "03/10/2023 07:00",
       "end": "03/10/2023 09:00"
     },
-    {
-      "title": "AD3011-Estrategia Competitiva - Sec.1 - TEO - Grupo 1 - Docente\tManuel Leonardo Toro",
-      "start": "03/10/2023 18:00",
-      "end": "03/10/2023 20:00"
-    },
-    {
-      "title": "HH2102-Economía, Gobernanza y Relaciones de Poder - Sec.9 - TEO - Grupo 9 - Docente\tGiancarlo Espinoza",
-      "start": "04/10/2023 15:00",
-      "end": "04/10/2023 16:00"
-    },
-    {
-      "title": "EL3014-Introducción a Sistemas Embebidos - Sec.2 - TEO - Grupo 2 - Docente\tLuz Adanaque",
-      "start": "03/10/2023 20:00",
-      "end": "03/10/2023 22:00"
-    },
-    {
-      "title": "EL3014-Introducción a Sistemas Embebidos - Sec.2 - TEO - Grupo 2 - Docente\tLuz Adanaque",
-      "start": "04/10/2023 20:00",
-      "end": "04/10/2023 22:00"
-    },
-    {
-      "title": "AM3001-Hidrología - Sec.1 - TEO - Grupo 1 - Docente\tHarold Omar Llauca",
-      "start": "04/10/2023 10:00",
-      "end": "04/10/2023 11:00"
-    },
-    {
-      "title": "CI2012-Dinámica y Vibraciones - Sec.1 - TEO - Grupo 1 - Docente\tRick Milton Delgadillo",
-      "start": "03/10/2023 14:00",
-      "end": "03/10/2023 16:00"
-    },
-    {
-      "title": "ME2013-Estática - Sec.2 - TEO - Grupo 2 - Docente\tDavy Olivera",
-      "start": "04/10/2023 11:00",
-      "end": "04/10/2023 13:00"
-    },
-    {
-      "title": "IN0077-Gestión de Compras y Mercados Electrónicos - Sec.1 - TEO - Grupo 1 - Docente\tLuis Gomez",
-      "start": "04/10/2023 09:00",
-      "end": "04/10/2023 10:00"
-    },
-    {
-      "title": "HH1102-Laboratorio de Comunicación 2 - Sec.9 - TEO - Grupo 9 - Docente\tCamila Chacon",
-      "start": "03/10/2023 10:00",
-      "end": "03/10/2023 12:00"
-    },
-    {
-      "title": "BI0005-Biotransporte - Sec.1 - TEO - Grupo 1 - Docente\tPaul Cardenas",
-      "start": "03/10/2023 09:00",
-      "end": "03/10/2023 10:00"
-    },
-    {
-      "title": "CC1105-Estadística y Probabilidades I - Sec.11 - TEO - Grupo 11 - Docente\tJessica Cleofe Muñoz",
-      "start": "04/10/2023 16:00",
-      "end": "04/10/2023 18:00"
-    },
-    {
-      "title": "CC1105-Estadística y Probabilidades I - Sec.14 - TEO - Grupo 14 - Docente\tJessica Cleofe Muñoz",
-      "start": "04/10/2023 18:00",
-      "end": "04/10/2023 19:00"
-    },
-    {
-      "title": "CS1021-Matemáticas Discretas I - Sec.5 - TEO - Grupo 5 - Docente\tJorge Tipe",
-      "start": "03/10/2023 12:00",
-      "end": "03/10/2023 14:00"
-    },
+    // ... 13 more
+    // 16 in total
     {
       "title": "IQ2001-Química Orgánica Aplicada - Sec.1 - TEO - Grupo 1 - Docente\tJuan Carlos Rodríguez",
       "start": "03/10/2023 16:00",
@@ -360,14 +305,24 @@ As expected, the response changed. Now we're getting the events for October 3rd 
 
 So, we can conclude that the `fechainicial` and `fechafinal` params are the start and end dates of the events.
 
-Now, let's find out where the `codaula` param comes from.
+In important note on datetime formats here.
 
-<Aside emoji="🚀">
-  As you can see now, in order to understand how this app is designed, we need
-  to interact a lot with it and keep track of what's happening behind the scenes
-  (with the requests, logs, etc). It is known as{" "}
-  <strong>reverse engineering</strong>.
+<FullImage
+  src="/assets/projects/utec-classrooms/response-calendar-intranet.png"
+  alt="Screenshot of the UTEC Reservas app showing the events in the classroom A803 on October 3rd, 2023. Event for course BI0034 is highlighted."
+/>
+
+In the JSON response, the event with `title` 'BI0034...' has a `start` property with value of `03/10/2023 07:00` and `end` of `03/10/2023 09:00`. This datetime formats match the UI of the UTEC Reservas app.
+
+<Aside emoji="👁️">
+  UTEC Classrooms is deployed in [Vercel](https://vercel.com/) and the database
+  is hosted in [Xata](https://xata.io/). Both services are located in the US. In
+  order to keep the datetime formats consistent, we use UTC datetimes in our
+  database. The conversion is done using [this utility you can see in
+  GitHub](https://github.com/cuevantn/utec-classrooms/blob/master/src/lib/utils/parse-datetime.js).
 </Aside>
+
+Now, let's find out where the `codaula` param comes from.
 
 Let's reload the page, clear the network tab, and select `Aulas` in `Tipo de Ambiente`.
 
@@ -380,7 +335,7 @@ A request is made to `/reserva-api/filtro/aula/reservable/tipoaula`. With the qu
 
 JSON Response
 
-```json showLineNumbers {89-92}
+```json {14-17}
 {
   "timestamp": 1696785539271,
   "uuid": null,
@@ -393,118 +348,12 @@ JSON Response
       "codAula": 2668,
       "nomAliasAula": "A101(40)"
     },
-    {
-      "codAula": 2670,
-      "nomAliasAula": "A201(18)"
-    },
-    {
-      "codAula": 2671,
-      "nomAliasAula": "A202(12)"
-    },
-    {
-      "codAula": 2672,
-      "nomAliasAula": "A203(24)"
-    },
-    {
-      "codAula": 2673,
-      "nomAliasAula": "A401(20)"
-    },
-    {
-      "codAula": 2674,
-      "nomAliasAula": "A402(23)"
-    },
-    {
-      "codAula": 1650,
-      "nomAliasAula": "A501(30)"
-    },
-    {
-      "codAula": 2730,
-      "nomAliasAula": "A502(16)"
-    },
-    {
-      "codAula": 2675,
-      "nomAliasAula": "A601(28)"
-    },
-    {
-      "codAula": 2676,
-      "nomAliasAula": "A602(23)"
-    },
-    {
-      "codAula": 1619,
-      "nomAliasAula": "A701(45)"
-    },
-    {
-      "codAula": 1625,
-      "nomAliasAula": "A702(45)"
-    },
-    {
-      "codAula": 1628,
-      "nomAliasAula": "A703(46)"
-    },
-    {
-      "codAula": 1621,
-      "nomAliasAula": "A704(45)"
-    },
-    {
-      "codAula": 1624,
-      "nomAliasAula": "A705(45)"
-    },
-    {
-      "codAula": 1634,
-      "nomAliasAula": "A706(45)"
-    },
-    {
-      "codAula": 1636,
-      "nomAliasAula": "A707(45)"
-    },
-    {
-      "codAula": 1630,
-      "nomAliasAula": "A708(45)"
-    },
-    {
-      "codAula": 1627,
-      "nomAliasAula": "A801(47)"
-    },
-    {
-      "codAula": 1626,
-      "nomAliasAula": "A802(45)"
-    },
+    /// ...
     {
       "codAula": 1622,
       "nomAliasAula": "A803(47)"
     },
-    {
-      "codAula": 1620,
-      "nomAliasAula": "A804(45)"
-    },
-    {
-      "codAula": 1639,
-      "nomAliasAula": "A901(46)"
-    },
-    {
-      "codAula": 1638,
-      "nomAliasAula": "A902(45)"
-    },
-    {
-      "codAula": 1637,
-      "nomAliasAula": "A903(45)"
-    },
-    {
-      "codAula": 1644,
-      "nomAliasAula": "A904(47)"
-    },
-    {
-      "codAula": 1643,
-      "nomAliasAula": "A905(45)"
-    },
-    {
-      "codAula": 1642,
-      "nomAliasAula": "A906(45)"
-    },
-    {
-      "codAula": 1641,
-      "nomAliasAula": "A907(45)"
-    },
+    // ...
     {
       "codAula": 2677,
       "nomAliasAula": "A908(45)"
@@ -515,7 +364,7 @@ JSON Response
 
 The response object has a `content` property, which is an array of objects. Each object has a `codAula` property, which is an id for the classroom, and a `nomAliasAula` property, which is the name of the classroom.
 
-In lines 89-92, we can see that the classroom `A803` has the id `1622`.
+In the highlighted lines, we can see that the classroom `A803` has the id `1622`.
 
 We can use this data to programmatically get the events for a particular classroom.
 
@@ -524,31 +373,39 @@ Want to get the events for the classroom `A101` on October 10rd, 2023?
 Here's the code:
 
 ```js
-const queryparams = new URLSearchParams({
-  codaula: "2668",
-  fechainicial: "10/10/2023",
-  fechafinal: "10/10/2023",
-});
+(async () => {
+  const queryparams = new URLSearchParams({
+    codaula: "2668", // Classroom A101
+    fechainicial: "10/10/2023",
+    fechafinal: "10/10/2023",
+  });
 
-const utec_token =
-  "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2OTY3OTU3NDcsInN1YiI6ImFudGhvbnkuY3VldmFAdXRlYy5lZHUucGUiLCJhdWRpZW5jZSI6InVuZGV0ZXJtaW5lZCIsImNyZWF0ZWQiOjE2OTY3ODEzNDcyMjl9.MBxsR-q3MkDpSXEEzEIXJPY6u9122h5RL7KxlbA7zKSTxTUhTPrejAJpFmDPvnq4O_Fx3xsVyt-WYROMoDGs6w";
+  const utec_token = "eyJhb...";
 
-try {
-  const response = await fetch(
-    `https://api.utec.edu.pe/reserva-api/calendarioaula/eventos?${queryparams.toString()}`,
-    {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": utec_token,
-      },
-    }
-  );
-  const data = await response.json();
-  console.log(data);
-} catch (error) {
-  console.error(error);
-}
+  try {
+    const response = await fetch(
+      `https://api.utec.edu.pe/reserva-api/calendarioaula/eventos?${queryparams.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "X-Auth-Token": utec_token,
+        },
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+})();
 ```
+
+<Aside emoji="🔥">
+  Try the code in your browser console. You'll need to replace the `utec_token`
+  value with [your own token](#how-to-get-the-token). Go to
+  [reserva-intranet.utec.edu.pe](https://reserva-intranet.utec.edu.pe/reserva/calendarioaula)
+  and start hacking now!
+</Aside>
 
 ### Where do we store the data?
 
@@ -694,7 +551,7 @@ The classes will be stored in the `course` table. And we can reference them in t
 
 ### Storing the data
 
-The hole project is developed in [SvelteKit](https://kit.svelte.dev/). It's a framework for building web applications.
+The hole project is developed in [SvelteKit](https://kit.svelte.dev/). SvelteKit is a framework for building web applications.
 
 This post isn't intended to be a tutorial on how to do replicate this project. The full source code is available on [GitHub](https://github.com/cuevantn/utec-classrooms). You can check it out if you want to learn more about how I built this app.
 
@@ -714,6 +571,10 @@ export async function POST({ url }) {
 		if (!classroom.code) {
 			throw new Error(`Classroom ${classroom_name} xata record has no code.`);
 		}
+    // ...
+  }
+// ...
+}
 // ...
 ```
 
@@ -813,4 +674,74 @@ If we apply the same process to all the classrooms (as done in the `/api/robot` 
   alt="Screenshot of the app showing the events in the classroom A803 on October 3rd, 2023"
 />
 
-## Algorithm
+### Querying the data
+
+We have the data in Xata.
+
+We can query the database with its JS SDK and get only the data we need.
+
+For example, to get the events in classroom A803 on October 3rd, 2023, we can do the following...
+
+In JavaScript:
+
+```js title="Query in JS"
+let events = await xata.db.event
+  .select(["name", "course.name", "start", "end"])
+  .filter({
+    $all: [
+      {
+        "classroom.name": "A803",
+      },
+      {
+        start: {
+          $ge: new Date("2023-10-03T11:00:00Z"), // October 3rd, 6:00 AM in Lima
+        },
+      },
+      {
+        end: {
+          $le: new Date("2023-10-04T03:00:00Z"), // October 3rd, 10:00 PM in Lima
+        },
+      },
+    ],
+  })
+  .getAll();
+```
+
+In SQL:
+
+```sql title="Query in SQL"
+SELECT
+    "event"."name",
+    "event"."start",
+    "event"."end",
+    "course"."name" as "course.name"
+
+FROM
+    "event"
+    LEFT JOIN "classroom" ON "event"."classroom" = "classroom"."id"
+    LEFT JOIN "course" ON "event"."course" = "course"."id"
+
+WHERE
+    "classroom"."name" = 'A803'
+    AND "event"."start" >= '2023-10-03T11:00:00Z'
+    AND "event"."end" <= '2023-10-04T03:00:00Z';
+```
+
+An it means:
+
+```human title="Query in Human Language"
+Get
+  the name, start time, end time, and course name
+of events
+  in classroom A803
+  that start on or after October 3rd at 06:00 am
+  and end on or before 10:00 pm (Lima time).
+```
+
+Easy, right?
+
+That's why I love Xata.
+
+## The algorithm
+
+Now that we know how to get the data, let's talk about how we can use it to find the free classrooms.

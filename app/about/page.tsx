@@ -4,11 +4,27 @@ import { GrainOverlay } from "@/components/grain-overlay";
 import { ShaderBackground } from "@/components/shader-background";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
+import { siteConfig } from "@/lib/site";
 import aboutMarkdown from "./about.md";
 
 export const metadata: Metadata = {
-	title: "About | anthony",
-	description: "About Anthony Cueva.",
+	title: "About",
+	description:
+		"Learn about Anthony Cueva, a product builder from Lima working on AI agents, builder communities, and shipping culture in LatAm.",
+	alternates: {
+		canonical: "/about",
+	},
+	openGraph: {
+		url: "/about",
+		title: `About | ${siteConfig.name}`,
+		description:
+			"Learn about Anthony Cueva, a product builder from Lima working on AI agents, builder communities, and shipping culture in LatAm.",
+	},
+	twitter: {
+		title: `About | ${siteConfig.name}`,
+		description:
+			"Learn about Anthony Cueva, a product builder from Lima working on AI agents, builder communities, and shipping culture in LatAm.",
+	},
 };
 
 export default function AboutPage() {

@@ -88,6 +88,7 @@ export function SortableRepositoryRows({
 	maxCount: number;
 }) {
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+	const [ready, setReady] = useState(false);
 
 	useEffect(() => {
 		try {
@@ -96,6 +97,9 @@ export function SortableRepositoryRows({
 		} catch {
 			// Storage is optional; the chronological default remains usable.
 		}
+
+		const frame = window.requestAnimationFrame(() => setReady(true));
+		return () => window.cancelAnimationFrame(frame);
 	}, []);
 
 	const sortedRepositories =
@@ -117,7 +121,8 @@ export function SortableRepositoryRows({
 				<button
 					type="button"
 					onClick={toggleSortDirection}
-					className="interaction-control flex w-fit items-center gap-1 text-[10px] text-text-faint hover:text-text-primary"
+					className="atlas-sort-content interaction-control flex w-fit items-center gap-1 text-[10px] text-text-faint hover:text-text-primary"
+					data-ready={ready}
 					aria-label={`Sort ${sortDirection === "asc" ? "newest" : "oldest"} first`}
 				>
 					<span>{sortDirection === "asc" ? "Oldest" : "Newest"}</span>
@@ -148,7 +153,10 @@ export function SortableRepositoryRows({
 				))}
 			</div>
 
-			<div className="border-t border-border-subtle">
+			<div
+				className="atlas-sort-content border-t border-border-subtle"
+				data-ready={ready}
+			>
 				{sortedRepositories.map((repository) => (
 					<a
 						key={repository.name}

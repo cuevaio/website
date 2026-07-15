@@ -307,11 +307,23 @@
 
 .atlas-sort-arrow {
 	display: inline-block;
+}
+
+.atlas-sort-content[data-ready="true"] .atlas-sort-arrow {
 	transition: transform var(--interaction-duration) var(--interaction-ease);
 }
 
 .atlas-sort-arrow[data-direction="desc"] {
 	transform: rotate(180deg);
+}
+
+.atlas-sort-content {
+	opacity: 0;
+	transition: opacity var(--interaction-duration) ease;
+}
+
+.atlas-sort-content[data-ready="true"] {
+	opacity: 1;
 }
 
 .local-date {

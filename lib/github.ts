@@ -22,9 +22,18 @@ export type RepositoryContribution = {
 	weeks: Array<{ date: string; count: number }>;
 };
 
+export type RecentCommit = {
+	repository: string;
+	sha: string;
+	href: string;
+	message: string;
+	committedAt: string;
+};
+
 export type GitHubActivityData = {
 	contributions: GitHubContributions | null;
 	repositories: RepositoryContribution[];
+	recentCommits: RecentCommit[];
 };
 
 type ContributionRepository = {
@@ -48,9 +57,19 @@ type GitHubGraphQLResponse = {
 	};
 };
 
+type GitHubCommitResponse = Array<{
+	sha?: string;
+	html_url?: string;
+	commit?: {
+		message?: string;
+		author?: { date?: string } | null;
+	};
+}>;
+
 const GITHUB_USERNAME = "cuevaio";
 const GITHUB_REVALIDATE_SECONDS = 21600;
 const INCLUDED_OWNERS = ["cuevaio/", "crafter-station/"];
+const RECENT_REPOSITORY_CANDIDATE_LIMIT = 12;
 
 function addUtcDays(date: Date, amount: number) {
 	const result = new Date(date);
@@ -276,18 +295,75 @@ async function getRepositoryContributions(
 	}
 }
 
+async function getRecentCommits(repositories: RepositoryContribution[]) {
+	const token = process.env.GITHUB_TOKEN;
+	const candidates = [...repositories]
+		.sort(
+			(left, right) =>
+				right.lastContributionAt.localeCompare(left.lastContributionAt) ||
+				left.name.localeCompare(right.name),
+		)
+		.slice(0, RECENT_REPOSITORY_CANDIDATE_LIMIT);
+
+	const results = await Promise.allSettled(
+		candidates.map(async (repository): Promise<RecentCommit[]> => {
+			const url = new URL(
+				`https://api.github.com/repos/${repository.name}/commits`,
+			);
+			url.searchParams.set("author", GITHUB_USERNAME);
+			url.searchParams.set("per_page", "3");
+			const response = await fetch(url, {
+				headers: {
+					Accept: "application/vnd.github+json",
+					...(token ? { Authorization: `Bearer ${token}` } : {}),
+					"User-Agent": "cueva.io",
+					"X-GitHub-Api-Version": "2022-11-28",
+				},
+				next: { revalidate: GITHUB_REVALIDATE_SECONDS },
+			});
+
+			if (!response.ok) return [];
+			const commits = (await response.json()) as GitHubCommitResponse;
+
+			return commits.flatMap((commit) => {
+				const committedAt = commit.commit?.author?.date;
+				const message = commit.commit?.message?.split("\n", 1)[0]?.trim();
+				if (!commit.sha || !commit.html_url || !committedAt || !message)
+					return [];
+
+				return [
+					{
+						repository: repository.name,
+						sha: commit.sha,
+						href: commit.html_url,
+						message,
+						committedAt,
+					},
+				];
+			});
+		}),
+	);
+
+	return results
+		.flatMap((result) => (result.status === "fulfilled" ? result.value : []))
+		.sort((left, right) => right.committedAt.localeCompare(left.committedAt));
+}
+
 export async function getGitHubActivity(): Promise<GitHubActivityData> {
 	const endDate = toDateString(new Date());
 	const startDate = toDateString(
 		addUtcDays(new Date(`${endDate}T00:00:00Z`), -364),
 	);
-	const [contributionResult, repositories] = await Promise.all([
-		getRollingContributions(startDate, endDate),
-		getRepositoryContributions(startDate, endDate),
+	const contributionPromise = getRollingContributions(startDate, endDate);
+	const repositories = await getRepositoryContributions(startDate, endDate);
+	const [contributionResult, recentCommits] = await Promise.all([
+		contributionPromise,
+		getRecentCommits(repositories),
 	]);
 
 	return {
 		contributions: contributionResult,
 		repositories,
+		recentCommits,
 	};
 }

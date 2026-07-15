@@ -269,18 +269,69 @@
 
 @media (min-width: 40rem) {
 	.atlas-grid {
-		grid-template-columns:
-			minmax(10rem, 2fr) repeat(var(--atlas-months), minmax(1rem, 1fr))
-			3.5rem;
+		grid-template-columns: minmax(10rem, 2fr) repeat(
+				var(--atlas-months),
+				minmax(1rem, 1fr)
+			);
 		column-gap: 0.25rem;
 	}
 }
 
 @media (min-width: 64rem) {
 	.atlas-grid {
-		grid-template-columns:
-			minmax(12rem, 2fr) repeat(var(--atlas-months), minmax(1.25rem, 1fr))
-			3.5rem 5.5rem;
+		grid-template-columns: minmax(12rem, 2fr) repeat(
+				var(--atlas-months),
+				minmax(1.25rem, 1fr)
+			);
+	}
+}
+
+.activity-row.interaction-surface:focus-visible,
+.activity-row.interaction-surface:has(:focus-visible) {
+	background: transparent;
+	box-shadow: none;
+}
+
+.activity-row-arrow {
+	opacity: 0;
+	transform: translate(-0.25rem, 1px);
+	transition:
+		opacity var(--interaction-duration) ease,
+		transform var(--interaction-duration) var(--interaction-ease);
+}
+
+.link-with-arrow:focus-visible .activity-row-arrow {
+	opacity: 1;
+	transform: translate(0, 1px);
+}
+
+.atlas-sort-arrow {
+	display: inline-block;
+	transition: transform var(--interaction-duration) var(--interaction-ease);
+}
+
+.atlas-sort-arrow[data-direction="desc"] {
+	transform: rotate(180deg);
+}
+
+.local-date {
+	opacity: 0;
+	transition: opacity var(--interaction-duration) ease;
+}
+
+.local-date[data-ready="true"] {
+	opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.activity-row.interaction-surface:hover {
+		background: transparent;
+		box-shadow: none;
+	}
+
+	.link-with-arrow:hover .activity-row-arrow {
+		opacity: 1;
+		transform: translate(0, 1px);
 	}
 }
 
@@ -409,6 +460,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.local-date {
+		transition-duration: 0.01ms;
+	}
+
 	.interaction-surface,
 	.interaction-pill,
 	.interaction-control,

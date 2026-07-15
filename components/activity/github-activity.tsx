@@ -1,7 +1,11 @@
 import type { CSSProperties } from "react";
+import { ExternalLinkIcon } from "@/components/activity/external-link-icon";
+import { LocalDate } from "@/components/activity/local-date";
+import { SortableRepositoryRows } from "@/components/activity/sortable-repository-rows";
 import type {
 	ContributionDay,
 	GitHubActivityData,
+	RecentCommit,
 	RepositoryContribution,
 } from "@/lib/github";
 
@@ -61,16 +65,44 @@ function formatRepositoryLastActive(
 		: `Week of ${date}`;
 }
 
-function formatCount(count: number) {
-	return new Intl.NumberFormat("en-US").format(count);
-}
-
 function formatMonth(key: string, includeYear = false) {
 	return new Intl.DateTimeFormat("en", {
 		month: "short",
 		year: includeYear ? "numeric" : undefined,
 		timeZone: "UTC",
 	}).format(new Date(`${key}-01T00:00:00Z`));
+}
+
+function formatCommitDate(date: string, includeYear = false) {
+	return `${new Intl.DateTimeFormat("en", {
+		month: "short",
+		day: "numeric",
+		year: includeYear ? "numeric" : undefined,
+		hour: "numeric",
+		minute: "2-digit",
+		timeZone: "UTC",
+	}).format(new Date(date))} UTC`;
+}
+
+function formatRelativeCommitDate(date: string) {
+	const difference = new Date(date).getTime() - Date.now();
+	const absoluteDifference = Math.abs(difference);
+	const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+	if (absoluteDifference < 60_000) return "just now";
+	if (absoluteDifference < 3_600_000) {
+		return formatter.format(Math.round(difference / 60_000), "minute");
+	}
+	if (absoluteDifference < 86_400_000) {
+		return formatter.format(Math.round(difference / 3_600_000), "hour");
+	}
+	if (absoluteDifference < 2_592_000_000) {
+		return formatter.format(Math.round(difference / 86_400_000), "day");
+	}
+	if (absoluteDifference < 31_536_000_000) {
+		return formatter.format(Math.round(difference / 2_592_000_000), "month");
+	}
+	return formatter.format(Math.round(difference / 31_536_000_000), "year");
 }
 
 function buildContributionGraph(
@@ -157,43 +189,64 @@ function buildAtlasRepositories(
 
 function getActiveRepositories(
 	repositories: RepositoryContribution[],
-	endDate: string,
+	recentCommits: RecentCommit[],
 ) {
-	const cutoff = toDateString(
-		addUtcDays(new Date(`${endDate}T00:00:00Z`), -27),
-	);
+	const commitsByRepository = new Map<string, RecentCommit[]>();
+	for (const commit of recentCommits) {
+		const commits = commitsByRepository.get(commit.repository) ?? [];
+		commits.push(commit);
+		commitsByRepository.set(commit.repository, commits);
+	}
 
-	return repositories
+	const withExactCommits = repositories
 		.map((repository) => ({
 			...repository,
-			recentCount: repository.weeks.reduce(
-				(total, week) =>
-					toDateString(addUtcDays(new Date(`${week.date}T00:00:00Z`), 6)) >=
-					cutoff
-						? total + week.count
-						: total,
-				0,
-			),
+			commits: commitsByRepository.get(repository.name) ?? [],
 		}))
-		.filter((repository) => repository.recentCount > 0)
+		.filter((repository) => repository.commits.length > 0)
 		.sort(
 			(left, right) =>
-				right.recentCount - left.recentCount ||
+				right.commits[0].committedAt.localeCompare(
+					left.commits[0].committedAt,
+				) || left.name.localeCompare(right.name),
+		);
+
+	if (withExactCommits.length > 0) return withExactCommits.slice(0, 4);
+
+	return [...repositories]
+		.sort(
+			(left, right) =>
 				right.lastContributionAt.localeCompare(left.lastContributionAt) ||
 				left.name.localeCompare(right.name),
 		)
-		.slice(0, 4);
+		.slice(0, 4)
+		.map((repository) => ({ ...repository, commits: [] }));
 }
 
-function RepositoryName({ name }: { name: string }) {
+function RepositoryName({
+	name,
+	showLinkIcon = false,
+}: {
+	name: string;
+	showLinkIcon?: boolean;
+}) {
 	const [owner, ...parts] = name.split("/");
 	const label = parts.join("/") || name;
 
 	return (
 		<>
-			<span className="block break-words text-text-primary">{label}</span>
-			<span className="block text-[10px] text-text-faint">
+			<span className="flex min-w-0 items-center gap-1.5">
+				<span className="min-w-0 break-words text-text-primary">{label}</span>
+				{showLinkIcon ? <ExternalLinkIcon /> : null}
+			</span>
+			<span className="block text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 sm:hidden">
 				{owner === "crafter-station" ? "cs" : "personal"}
+			</span>
+			<span
+				className="hidden text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 sm:block"
+				translate="no"
+			>
+				{owner}
 			</span>
 		</>
 	);
@@ -201,13 +254,16 @@ function RepositoryName({ name }: { name: string }) {
 
 function ActiveNow({
 	repositories,
-	endDate,
+	recentCommits,
 }: {
 	repositories: RepositoryContribution[];
-	endDate: string;
+	recentCommits: RecentCommit[];
 }) {
-	const active = getActiveRepositories(repositories, endDate);
+	const active = getActiveRepositories(repositories, recentCommits);
 	if (active.length === 0) return null;
+	const hasExactCommits = active.some(
+		(repository) => repository.commits.length > 0,
+	);
 
 	return (
 		<section
@@ -218,30 +274,100 @@ function ActiveNow({
 				Active now
 			</h2>
 			<p className="mt-1 text-[13px] text-text-faint">
-				Recent public commit activity, based on weekly data.
+				{hasExactCommits
+					? "My latest commits across public repositories."
+					: "Recently active public repositories."}
 			</p>
-			<ul className="mt-4 grid border-t border-border-subtle sm:grid-cols-2">
+			<ul className="mt-4 border-t border-border-subtle">
 				{active.map((repository) => (
 					<li key={repository.name} className="border-b border-border-subtle">
-						<a
-							href={repository.href}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="interaction-surface group -mx-2 flex min-h-16 items-center justify-between gap-3 rounded-xl px-2 py-2 sm:mx-0 sm:first:mr-2 sm:odd:mr-2 sm:even:ml-2"
-							aria-label={`${repository.name}, ${formatCount(repository.recentCount)} commits in recent weekly data, last active ${formatRepositoryLastActive(repository, true)}`}
-						>
-							<span className="min-w-0 text-[13px]">
-								<RepositoryName name={repository.name} />
-							</span>
-							<span className="shrink-0 text-right">
-								<span className="block text-[13px] text-text-muted">
-									{formatCount(repository.recentCount)} commits
+						{repository.commits.length > 0 ? (
+							<details className="group/repository">
+								<summary className="activity-row interaction-surface group flex min-h-16 w-full min-w-0 cursor-pointer list-none items-center justify-between gap-4 py-3">
+									<span className="min-w-0 text-[13px]">
+										<RepositoryName name={repository.name} />
+									</span>
+									<span className="flex shrink-0 items-center gap-3 text-right">
+										<span>
+											<span className="block text-[11px] text-text-muted">
+												<LocalDate
+													date={repository.commits[0].committedAt}
+													fallback={formatCommitDate(
+														repository.commits[0].committedAt,
+													)}
+												/>
+											</span>
+											<span className="block text-[10px] text-text-faint">
+												<LocalDate
+													date={repository.commits[0].committedAt}
+													fallback={formatRelativeCommitDate(
+														repository.commits[0].committedAt,
+													)}
+													relative
+												/>
+											</span>
+										</span>
+										<span
+											className="w-3 text-center text-[14px] text-text-faint transition-transform duration-150 group-open/repository:rotate-45"
+											aria-hidden="true"
+										>
+											+
+										</span>
+									</span>
+								</summary>
+								<div className="min-w-0 overflow-hidden pb-4 pl-3 sm:pl-5">
+									<ol className="min-w-0 pl-3 sm:pl-4">
+										{repository.commits.map((commit) => (
+											<li key={commit.sha}>
+												<a
+													href={commit.href}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="activity-row link-with-arrow interaction-surface group block min-w-0 py-2"
+												>
+													<span className="flex min-w-0 items-center gap-1.5">
+														<span className="min-w-0 break-words text-[12px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
+															{commit.message}
+														</span>
+														<ExternalLinkIcon />
+													</span>
+													<span className="mt-0.5 block break-words text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+														{commit.sha.slice(0, 7)} ·{" "}
+														<LocalDate
+															date={commit.committedAt}
+															fallback={formatCommitDate(commit.committedAt)}
+														/>
+													</span>
+												</a>
+											</li>
+										))}
+									</ol>
+									<a
+										href={repository.href}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="link-with-arrow interaction-link group mt-2 inline-flex items-center gap-1.5 text-[11px] text-text-faint"
+									>
+										<span>View repository</span>
+										<ExternalLinkIcon />
+									</a>
+								</div>
+							</details>
+						) : (
+							<a
+								href={repository.href}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="activity-row link-with-arrow interaction-surface group flex min-h-16 w-full min-w-0 items-center justify-between gap-4 py-3"
+							>
+								<span className="min-w-0 text-[13px]">
+									<RepositoryName name={repository.name} showLinkIcon />
 								</span>
-								<span className="block text-[10px] text-text-faint">
+								<span className="text-[10px] text-text-faint">
 									{formatRepositoryLastActive(repository)}
 								</span>
-							</span>
-						</a>
+							</a>
+						)}
 					</li>
 				))}
 			</ul>
@@ -294,131 +420,14 @@ function RepositoryAtlas({
 				<p className="sr-only">
 					Monthly public repository commits from{" "}
 					{formatMonth(monthKeys[0], true)} to{" "}
-					{formatMonth(monthKeys.at(-1) ?? monthKeys[0], true)}. Exact values
-					follow in the View activity data disclosure.
+					{formatMonth(monthKeys.at(-1) ?? monthKeys[0], true)}. Select a
+					repository to open it on GitHub.
 				</p>
-				<div className="mt-5">
-					<div
-						className="atlas-grid items-end px-2 pb-2 text-[9px] text-text-faint"
-						aria-hidden="true"
-					>
-						<span />
-						{monthKeys.map((key) => (
-							<span
-								key={key}
-								className="text-center"
-								title={formatMonth(key, true)}
-							>
-								<span className="sm:hidden">
-									{formatMonth(key).slice(0, 1)}
-								</span>
-								<span className="hidden sm:inline">{formatMonth(key)}</span>
-							</span>
-						))}
-						<span className="hidden text-right sm:block">Total</span>
-						<span className="hidden lg:block">Last active</span>
-					</div>
-
-					<div className="border-t border-border-subtle">
-						{atlasRepositories.map((repository) => (
-							<a
-								key={repository.name}
-								href={repository.href}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="interaction-surface atlas-grid group min-h-11 items-center rounded-lg border-b border-border-subtle px-2 py-1.5"
-								aria-label={`${repository.name}, ${formatCount(repository.total)} commits across ${repository.activeMonths} active ${repository.activeMonths === 1 ? "month" : "months"}, last active ${formatRepositoryLastActive(repository, true)}`}
-							>
-								<span className="min-w-0 pr-2 text-[11px] leading-tight sm:text-[12px]">
-									<RepositoryName name={repository.name} />
-									<span className="text-[9px] text-text-faint sm:hidden">
-										{formatCount(repository.total)} commits
-									</span>
-								</span>
-								{repository.months.map((month) => {
-									const level = getIntensityLevel(month.count, maxCount);
-									const label = `${month.count} ${month.count === 1 ? "commit" : "commits"} in ${repository.name} during ${formatMonth(month.key, true)}`;
-									return (
-										<span
-											key={month.key}
-											className="flex justify-center"
-											aria-hidden="true"
-										>
-											<span
-												title={label}
-												className={`h-4 w-[calc(100%-0.125rem)] min-w-1 rounded-[2px] ${level === 0 ? emptyActivityClassName : intensityClassNames[level]}`}
-											/>
-										</span>
-									);
-								})}
-								<span className="hidden text-right text-[11px] text-text-muted sm:block">
-									{formatCount(repository.total)}
-								</span>
-								<span className="hidden text-[10px] text-text-faint lg:block">
-									{formatRepositoryLastActive(repository)}
-								</span>
-							</a>
-						))}
-					</div>
-					<div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[10px] text-text-faint">
-						<span>
-							Each week is attributed to the month containing its start date.
-						</span>
-						<span className="flex items-center gap-1.5">
-							<span>None</span>
-							<span
-								aria-hidden="true"
-								className={`h-3 w-3 rounded-[2px] ${emptyActivityClassName}`}
-							/>
-							<span className="ml-1">Less</span>
-							{[1, 2, 3, 4].map((level) => (
-								<span
-									key={level}
-									aria-hidden="true"
-									className={`h-3 w-3 rounded-[2px] ${intensityClassNames[level]}`}
-								/>
-							))}
-							<span className="ml-1">More</span>
-						</span>
-					</div>
-				</div>
-
-				<details className="group/details mt-5">
-					<summary className="interaction-pill -ml-2 cursor-pointer list-none text-[12px] text-text-muted">
-						<span className="group-open/details:hidden">
-							View activity data
-						</span>
-						<span className="hidden group-open/details:inline">
-							Hide activity data
-						</span>
-					</summary>
-					<div className="mt-3 border-t border-border-subtle">
-						{atlasRepositories.map((repository) => (
-							<div
-								key={repository.name}
-								className="grid gap-1 border-b border-border-subtle py-3 sm:grid-cols-[minmax(10rem,1fr)_2fr] sm:gap-4"
-							>
-								<p className="text-[12px] text-text-primary">
-									{repository.name}{" "}
-									<span className="text-text-faint">
-										({formatCount(repository.total)} total)
-									</span>
-								</p>
-								<ul className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-text-muted">
-									{repository.months
-										.filter((month) => month.count > 0)
-										.map((month) => (
-											<li key={month.key}>
-												{formatMonth(month.key, true)}:{" "}
-												{formatCount(month.count)}{" "}
-												{month.count === 1 ? "commit" : "commits"}
-											</li>
-										))}
-								</ul>
-							</div>
-						))}
-					</div>
-				</details>
+				<SortableRepositoryRows
+					repositories={atlasRepositories}
+					monthKeys={monthKeys}
+					maxCount={maxCount}
+				/>
 			</div>
 		</section>
 	);
@@ -451,9 +460,10 @@ export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 							href="https://github.com/cuevaio"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="interaction-link shrink-0 text-[12px] text-text-faint"
+							className="link-with-arrow interaction-link group inline-flex shrink-0 items-center gap-1.5 text-[12px] text-text-faint"
 						>
-							GitHub
+							<span>GitHub</span>
+							<ExternalLinkIcon />
 						</a>
 					</div>
 					<div className="mt-5 w-full">
@@ -501,7 +511,10 @@ export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 				</p>
 			)}
 
-			<ActiveNow repositories={activity.repositories} endDate={endDate} />
+			<ActiveNow
+				repositories={activity.repositories}
+				recentCommits={activity.recentCommits}
+			/>
 			<RepositoryAtlas
 				repositories={activity.repositories}
 				startDate={startDate}

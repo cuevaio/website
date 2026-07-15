@@ -20,11 +20,10 @@ const intensityClassNames = [
 	"bg-text-primary",
 ];
 
-type RepositoryMonth = { key: string; count: number };
+type RepositoryWeek = { key: string; count: number };
 type AtlasRepository = RepositoryContribution & {
-	months: RepositoryMonth[];
-	activeMonths: number;
-	firstActiveMonth: string;
+	periods: RepositoryWeek[];
+	activeWeeks: number;
 };
 
 function addUtcDays(date: Date, amount: number) {
@@ -117,14 +116,17 @@ function buildContributionGraph(
 	];
 }
 
-function getMonthKeys(startDate: string, endDate: string) {
-	const cursor = new Date(`${startDate.slice(0, 7)}-01T00:00:00Z`);
-	const endKey = endDate.slice(0, 7);
+function getWeekKeys(startDate: string, endDate: string) {
+	const cursor = new Date(`${startDate}T00:00:00Z`);
+	if (cursor.getUTCDay() !== 0) {
+		cursor.setUTCDate(cursor.getUTCDate() + (7 - cursor.getUTCDay()));
+	}
+	const end = new Date(`${endDate}T00:00:00Z`);
 	const keys: string[] = [];
 
-	while (toDateString(cursor).slice(0, 7) <= endKey) {
-		keys.push(toDateString(cursor).slice(0, 7));
-		cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+	while (cursor <= end) {
+		keys.push(toDateString(cursor));
+		cursor.setUTCDate(cursor.getUTCDate() + 7);
 	}
 
 	return keys;
@@ -145,32 +147,28 @@ function getIntensityLevel(count: number, maxCount: number) {
 
 function buildAtlasRepositories(
 	repositories: RepositoryContribution[],
-	monthKeys: string[],
+	weekKeys: string[],
 ) {
 	return repositories
 		.map((repository): AtlasRepository => {
-			const counts = new Map<string, number>();
-			for (const week of repository.weeks) {
-				const key = week.date.slice(0, 7);
-				counts.set(key, (counts.get(key) ?? 0) + week.count);
-			}
-			const months = monthKeys.map((key) => ({
+			const counts = new Map(
+				repository.weeks.map((week) => [week.date, week.count]),
+			);
+			const periods = weekKeys.map((key) => ({
 				key,
 				count: counts.get(key) ?? 0,
 			}));
-			const active = months.filter((month) => month.count > 0);
 
 			return {
 				...repository,
-				months,
-				activeMonths: active.length,
-				firstActiveMonth: active[0]?.key ?? "9999-99",
+				periods,
+				activeWeeks: periods.filter((week) => week.count > 0).length,
 			};
 		})
+		.filter((repository) => repository.activeWeeks > 0)
 		.sort(
 			(left, right) =>
-				left.firstActiveMonth.localeCompare(right.firstActiveMonth) ||
-				right.total - left.total ||
+				left.lastContributionAt.localeCompare(right.lastContributionAt) ||
 				left.name.localeCompare(right.name),
 		);
 }
@@ -233,7 +231,7 @@ function RepositoryAtlas({
 	endDate: string;
 }) {
 	const recentCutoff = getTrailingMonthStart(endDate, 6);
-	const monthKeys = getMonthKeys(recentCutoff, endDate);
+	const weekKeys = getWeekKeys(recentCutoff, endDate);
 	const atlasRepositories = buildAtlasRepositories(
 		repositories.filter((repository) =>
 			repository.weeks.some(
@@ -242,11 +240,11 @@ function RepositoryAtlas({
 					recentCutoff,
 			),
 		),
-		monthKeys,
+		weekKeys,
 	);
 	const maxCount = atlasRepositories.reduce(
 		(maximum, repository) =>
-			Math.max(maximum, ...repository.months.map((month) => month.count)),
+			Math.max(maximum, ...repository.periods.map((week) => week.count)),
 		0,
 	);
 
@@ -256,7 +254,7 @@ function RepositoryAtlas({
 		<section
 			className="relative left-1/2 mt-12 w-[min(72rem,calc(100vw-2rem))] -translate-x-1/2 tabular-nums sm:mt-14"
 			aria-labelledby="repository-atlas"
-			style={{ "--atlas-months": monthKeys.length } as CSSProperties}
+			style={{ "--atlas-weeks": weekKeys.length } as CSSProperties}
 		>
 			<div className="mx-auto max-w-[72rem]">
 				<div className="flex flex-wrap items-end justify-between gap-3">
@@ -265,25 +263,25 @@ function RepositoryAtlas({
 							Public commits by repository
 						</h2>
 						<p className="mt-1 text-[13px] text-text-faint">
-							Activity moves between repositories in distinct monthly bursts,
+							Activity moves between repositories in distinct weekly bursts,
 							with inactive gaps left visible.
 						</p>
 					</div>
 					<p className="text-[11px] text-text-faint">
-						{formatMonth(monthKeys[0], true)} to{" "}
-						{formatMonth(monthKeys.at(-1) ?? monthKeys[0], true)}
+						{formatMonth(recentCutoff.slice(0, 7), true)} to{" "}
+						{formatMonth(endDate.slice(0, 7), true)}
 					</p>
 				</div>
 
 				<p className="sr-only">
-					Monthly public repository commits from{" "}
-					{formatMonth(monthKeys[0], true)} to{" "}
-					{formatMonth(monthKeys.at(-1) ?? monthKeys[0], true)}. Select a
-					repository to open it on GitHub.
+					Weekly public repository commits from{" "}
+					{formatMonth(recentCutoff.slice(0, 7), true)} to{" "}
+					{formatMonth(endDate.slice(0, 7), true)}. Select a repository to open
+					it on GitHub.
 				</p>
 				<SortableRepositoryRows
 					repositories={atlasRepositories}
-					monthKeys={monthKeys}
+					weekKeys={weekKeys}
 					maxCount={maxCount}
 				/>
 			</div>

@@ -17,9 +17,8 @@ const intensityClassNames = [
 ];
 
 type AtlasRepository = RepositoryContribution & {
-	months: Array<{ key: string; count: number }>;
-	activeMonths: number;
-	firstActiveMonth: string;
+	periods: Array<{ key: string; count: number }>;
+	activeWeeks: number;
 };
 
 function formatMonth(key: string, includeYear = false) {
@@ -33,6 +32,15 @@ function formatMonth(key: string, includeYear = false) {
 function formatLongDate(date: string) {
 	return new Intl.DateTimeFormat("en", {
 		month: "long",
+		day: "numeric",
+		year: "numeric",
+		timeZone: "UTC",
+	}).format(new Date(`${date}T00:00:00Z`));
+}
+
+function formatWeek(date: string) {
+	return new Intl.DateTimeFormat("en", {
+		month: "short",
 		day: "numeric",
 		year: "numeric",
 		timeZone: "UTC",
@@ -71,11 +79,11 @@ function RepositoryLabel({ name }: { name: string }) {
 
 export function SortableRepositoryRows({
 	repositories,
-	monthKeys,
+	weekKeys,
 	maxCount,
 }: {
 	repositories: AtlasRepository[];
-	monthKeys: string[];
+	weekKeys: string[];
 	maxCount: number;
 }) {
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -93,8 +101,15 @@ export function SortableRepositoryRows({
 		return () => window.cancelAnimationFrame(frame);
 	}, []);
 
-	const sortedRepositories =
-		sortDirection === "asc" ? repositories : [...repositories].reverse();
+	const sortedRepositories = [...repositories].sort((left, right) => {
+		const dateComparison = left.lastContributionAt.localeCompare(
+			right.lastContributionAt,
+		);
+		return (
+			(sortDirection === "asc" ? dateComparison : -dateComparison) ||
+			left.name.localeCompare(right.name)
+		);
+	});
 
 	function toggleSortDirection() {
 		const nextDirection = sortDirection === "asc" ? "desc" : "asc";
@@ -131,58 +146,77 @@ export function SortableRepositoryRows({
 						<path d="M6 2.5v7M3.5 7 6 9.5 8.5 7" />
 					</svg>
 				</button>
-				{monthKeys.map((key) => (
-					<span
-						key={key}
-						className="text-center"
-						title={formatMonth(key, true)}
-						aria-hidden="true"
-					>
-						<span className="sm:hidden">{formatMonth(key).slice(0, 1)}</span>
-						<span className="hidden sm:inline">{formatMonth(key)}</span>
-					</span>
-				))}
+				{weekKeys.map((key, index) => {
+					const month = key.slice(0, 7);
+					const showMonth =
+						index === 0 || weekKeys[index - 1].slice(0, 7) !== month;
+
+					return (
+						<span
+							key={key}
+							className="text-center"
+							title={`Week of ${formatWeek(key)}`}
+							aria-hidden="true"
+						>
+							{showMonth ? (
+								<>
+									<span className="sm:hidden">
+										{formatMonth(month).slice(0, 1)}
+									</span>
+									<span className="hidden sm:inline">{formatMonth(month)}</span>
+								</>
+							) : null}
+						</span>
+					);
+				})}
 			</div>
 
 			<div className="atlas-sort-content space-y-0.5" data-ready={ready}>
-				{sortedRepositories.map((repository) => (
-					<a
-						key={repository.name}
-						href={repository.href}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="activity-row link-with-arrow interaction-surface atlas-grid group min-h-10 items-center py-2"
-						aria-label={`${repository.name}, ${formatCount(repository.total)} commits across ${repository.activeMonths} active ${repository.activeMonths === 1 ? "month" : "months"}, ${repository.months
-							.filter((month) => month.count > 0)
-							.map(
-								(month) =>
-									`${formatMonth(month.key, true)}: ${formatCount(month.count)}`,
-							)
-							.join(", ")}, last active ${formatLastActive(repository)}`}
-					>
-						<RepositoryLabel name={repository.name} />
-						{repository.months.map((month) => {
-							const level = getIntensityLevel(month.count, maxCount);
-							const label = `${month.count} ${month.count === 1 ? "commit" : "commits"} in ${repository.name} during ${formatMonth(month.key, true)}`;
-							return (
-								<span
-									key={month.key}
-									className="flex justify-center"
-									aria-hidden="true"
-								>
+				{sortedRepositories.map((repository) => {
+					const visibleTotal = repository.periods.reduce(
+						(total, week) => total + week.count,
+						0,
+					);
+
+					return (
+						<a
+							key={repository.name}
+							href={repository.href}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="activity-row link-with-arrow interaction-surface atlas-grid group min-h-10 items-center py-2"
+							aria-label={`${repository.name}, ${formatCount(visibleTotal)} commits across ${repository.activeWeeks} active ${repository.activeWeeks === 1 ? "week" : "weeks"}, ${repository.periods
+								.filter((week) => week.count > 0)
+								.map(
+									(week) =>
+										`Week of ${formatWeek(week.key)}: ${formatCount(week.count)}`,
+								)
+								.join(", ")}, last active ${formatLastActive(repository)}`}
+						>
+							<RepositoryLabel name={repository.name} />
+							{repository.periods.map((week) => {
+								const level = getIntensityLevel(week.count, maxCount);
+								const label = `${week.count} ${week.count === 1 ? "commit" : "commits"} in ${repository.name} during the week of ${formatWeek(week.key)}`;
+								return (
 									<span
-										title={label}
-										className={`h-4 w-[calc(100%-0.125rem)] min-w-1 rounded-[2px] ${level === 0 ? emptyActivityClassName : intensityClassNames[level]}`}
-									/>
-								</span>
-							);
-						})}
-					</a>
-				))}
+										key={week.key}
+										className="flex justify-center"
+										aria-hidden="true"
+									>
+										<span
+											title={label}
+											className={`h-2 w-full min-w-1 rounded-[2px] sm:h-4 sm:w-[calc(100%-0.125rem)] ${level === 0 ? emptyActivityClassName : intensityClassNames[level]}`}
+										/>
+									</span>
+								);
+							})}
+						</a>
+					);
+				})}
 			</div>
 
 			<div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[10px] text-text-faint">
-				<span>Commits, grouped by month.</span>
+				<span>Commits, grouped by week.</span>
 				<span className="flex items-center gap-1.5">
 					<span>None</span>
 					<span

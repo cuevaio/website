@@ -101,13 +101,17 @@ export default async function ActivityPage() {
 											</span>
 										</span>
 									</h3>
-									<p className="mt-0.5 text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-										{formatPlatform(item.platform)} ·{" "}
-										<RelativeDate date={item.publishedAt} /> ·{" "}
+									<p className="social-metadata mt-0.5 text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+										<span className="social-metadata-platform">
+											{formatPlatform(item.platform)}
+										</span>
+										<span className="social-metadata-separator"> · </span>
 										<LocalDate
 											date={item.publishedAt}
 											fallback={formatSocialDate(item.publishedAt)}
 										/>
+										<span className="social-metadata-separator"> · </span>
+										<RelativeDate date={item.publishedAt} />
 									</p>
 								</a>
 							</li>

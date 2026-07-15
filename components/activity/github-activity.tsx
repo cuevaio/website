@@ -174,7 +174,7 @@ function ActiveNow({ recentCommits }: { recentCommits: RecentCommit[] }) {
 							href={commit.href}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="activity-row link-with-arrow interaction-surface group block min-w-0 py-2"
+							className="activity-row commit-metadata link-with-arrow interaction-surface group block min-w-0 py-2"
 						>
 							<span className="flex items-baseline justify-between gap-4 text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
 								<span className="min-w-0 truncate" translate="no">
@@ -191,7 +191,10 @@ function ActiveNow({ recentCommits }: { recentCommits: RecentCommit[] }) {
 								<ExternalLinkIcon />
 							</span>
 							<span className="mt-0.5 block text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-								{commit.sha.slice(0, 7)} ·{" "}
+								<span className="commit-metadata-id">
+									{commit.sha.slice(0, 7)}
+								</span>
+								<span className="commit-metadata-separator"> · </span>
 								<LocalDate
 									date={commit.committedAt}
 									fallback={formatCommitDate(commit.committedAt)}

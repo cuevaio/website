@@ -6,7 +6,7 @@ import { formatRelativeTime } from "@/lib/relative-time";
 const updateInterval = 30_000;
 
 export function RelativeDate({ date }: { date: string }) {
-	const [label, setLabel] = useState("Recently");
+	const [label, setLabel] = useState("");
 
 	useEffect(() => {
 		function updateLabel() {
@@ -18,5 +18,9 @@ export function RelativeDate({ date }: { date: string }) {
 		return () => window.clearInterval(interval);
 	}, [date]);
 
-	return <time dateTime={date}>{label}</time>;
+	return (
+		<time dateTime={date} className="relative-date" data-ready={Boolean(label)}>
+			{label}
+		</time>
+	);
 }

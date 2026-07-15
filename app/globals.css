@@ -329,6 +329,89 @@
 	opacity: 1;
 }
 
+.relative-date {
+	display: inline-block;
+	opacity: 0;
+	transform: translateY(2px);
+	transition:
+		opacity var(--interaction-duration) ease,
+		transform var(--interaction-duration) var(--interaction-ease);
+}
+
+.relative-date[data-ready="true"] {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.social-metadata,
+.commit-metadata {
+	--social-metadata-delay: 250ms;
+	--social-metadata-duration: 500ms;
+}
+
+.social-metadata-platform,
+.commit-metadata-id {
+	display: inline-block;
+	animation: social-metadata-platform-reveal var(--social-metadata-duration)
+		ease both;
+	animation-delay: var(--social-metadata-delay);
+}
+
+.social-metadata .local-date,
+.commit-metadata .local-date {
+	transition-duration: var(--social-metadata-duration);
+	transition-delay: calc(
+		var(--social-metadata-delay) +
+		var(--social-metadata-duration)
+	);
+}
+
+.social-metadata .relative-date,
+.commit-metadata .relative-date {
+	transition-duration: var(--social-metadata-duration);
+	transition-delay: calc(
+		var(--social-metadata-delay) +
+		var(--social-metadata-delay) +
+		var(--social-metadata-duration) +
+		var(--social-metadata-duration)
+	);
+}
+
+.social-metadata-separator,
+.commit-metadata-separator {
+	opacity: 0;
+	transition: opacity var(--interaction-duration) ease
+		calc(
+			var(--social-metadata-delay) +
+			var(--social-metadata-delay) +
+			var(--social-metadata-delay) +
+			var(--social-metadata-duration) +
+			var(--social-metadata-duration) +
+			var(--social-metadata-duration)
+		);
+}
+
+.social-metadata:has(.local-date[data-ready="true"]):has(
+		.relative-date[data-ready="true"]
+	)
+	.social-metadata-separator {
+	opacity: 1;
+}
+
+.commit-metadata:has(.local-date[data-ready="true"]):has(
+		.relative-date[data-ready="true"]
+	)
+	.commit-metadata-separator {
+	opacity: 1;
+}
+
+@keyframes social-metadata-platform-reveal {
+	from {
+		opacity: 0;
+		transform: translateY(2px);
+	}
+}
+
 .post-list-reveal {
 	animation: post-list-reveal 180ms var(--interaction-ease) both;
 }
@@ -463,8 +546,17 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.local-date {
+	.local-date,
+	.relative-date,
+	.social-metadata-separator,
+	.commit-metadata-separator {
 		transition-duration: 0.01ms;
+		transition-delay: 0ms;
+	}
+
+	.social-metadata-platform,
+	.commit-metadata-id {
+		animation: none;
 	}
 
 	.post-list-reveal {

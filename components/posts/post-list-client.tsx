@@ -25,7 +25,7 @@ function PostLink({ post }: { post: PostListItem }) {
 				rel={internal ? undefined : "noopener noreferrer"}
 				className="link-with-arrow interaction-surface group block py-2"
 			>
-				<span className="flex items-center gap-1.5 text-[15px] text-text-secondary transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
+				<span className="flex items-center gap-1.5 text-[15px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
 					{post.title}
 					<ExternalLinkIcon />
 				</span>

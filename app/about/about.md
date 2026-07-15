@@ -12,7 +12,7 @@ I’ve spent the last years deep in the technical side. Building systems that de
 
 In late 2025, [Crafter Station](https://www.crafterstation.com) evolved into something bigger: a community. Our focus is simple: spread shipping culture across LatAm. We started by bringing together 100+ builders for the largest AI hackathon in Perú. Today we're 800+ people, all pushing each other to build and ship more.
 
-I currently work as a Product Engineer at Zabio. Outside work, I'm building [Tab](https://tab.cueva.io), [Normal](https://github.com/cuevaio/normal), and Crafter Station with friends across the region.
+I'm building [Tab](https://tab.cueva.io), [Normal](https://github.com/cuevaio/normal), and Crafter Station with friends across the region.
 
 These days, my work doesn’t fit neatly into a single role. One day I’m building a product, the next I’m demoing it, running ads, organizing a hackathon, or hosting a [Code Brew](https://codebrew.tech).
 

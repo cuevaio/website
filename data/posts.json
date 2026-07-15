@@ -28,5 +28,35 @@
 		"title": "Peruvian Elections 2026 Bot",
 		"link": "https://elecciones.cueva.io/",
 		"description": "A focused bot for following Peru's 2026 election process and checking election-related updates without digging through official sites."
+	},
+	{
+		"date": "2026-07-15",
+		"title": "Limon",
+		"link": "https://limon.lat/",
+		"description": "Paste a Google Maps restaurant link and get a shareable landing page built from its public details, photos, contact information, and reviews."
+	},
+	{
+		"date": "2026-07-06",
+		"title": "Tab",
+		"link": "https://tab.cueva.io/",
+		"description": "Native autocomplete for macOS. Routine suggestions run locally, Deep Suggestions use the cloud only when requested, and every insertion stays under the user's control."
+	},
+	{
+		"date": "2026-06-26",
+		"title": "Build4Venezuela",
+		"link": "https://build4venezuela.com/",
+		"description": "A humanitarian hackathon and multilingual platform for builders responding to the Venezuela earthquakes. I co-organized the initiative and helped build the project platform."
+	},
+	{
+		"date": "2026-06-15",
+		"title": "Normal",
+		"link": "https://github.com/cuevaio/normal",
+		"description": "A WhatsApp workflow product for teams that need versioned automations, durable runs, and a clear audit trail. Currently under active development."
+	},
+	{
+		"date": "2025-09-16",
+		"title": "Lupa",
+		"link": "https://www.lupa.build/",
+		"description": "A knowledge platform for AI agents: semantic search, complete document retrieval, parsing, scheduled refreshes, versioned deployments, and analytics."
 	}
 ]

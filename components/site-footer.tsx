@@ -5,10 +5,18 @@ export function SiteFooter() {
 				<p>cueva.io</p>
 				<div className="flex flex-wrap items-center gap-4">
 					<a
+						href="https://x.com/cuevaio"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="interaction-link"
+					>
+						X
+					</a>
+					<a
 						href="https://instagram.com/cueva.io"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="transition-colors hover:text-text-primary"
+						className="interaction-link"
 					>
 						Instagram
 					</a>
@@ -16,7 +24,7 @@ export function SiteFooter() {
 						href="https://github.com/cuevaio"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="transition-colors hover:text-text-primary"
+						className="interaction-link"
 					>
 						GitHub
 					</a>
@@ -24,22 +32,19 @@ export function SiteFooter() {
 						href="https://linkedin.com/in/cuevaio"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="transition-colors hover:text-text-primary"
+						className="interaction-link"
 					>
 						LinkedIn
 					</a>
 
-					<a
-						href="mailto:hi@cueva.io"
-						className="transition-colors hover:text-text-primary"
-					>
+					<a href="mailto:hi@cueva.io" className="interaction-link">
 						Email
 					</a>
 					<a
 						href="https://cal.com/cuevaio"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="transition-colors hover:text-text-primary"
+						className="interaction-link"
 					>
 						Cal
 					</a>

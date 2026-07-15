@@ -83,8 +83,7 @@ function LinkIcon() {
 	);
 }
 
-const iconButtonClassName =
-	"rounded-full text-text-faint hover:text-text-primary focus-visible:text-text-primary";
+const iconButtonClassName = "rounded-full text-text-faint";
 
 function PostActions({
 	post,
@@ -151,7 +150,7 @@ function SimplePostLink({ post }: { post: PostListItem }) {
 				href={post.link}
 				target={target}
 				rel={rel}
-				className="inline-flex w-full items-center rounded-full px-3 py-1 text-[15px] leading-8 text-text-secondary transition-[background-color,color,box-shadow,transform] duration-180 ease-out hover:bg-surface-hover hover:text-text-primary hover:shadow-[inset_0_0_0_1px_var(--border-subtle)] active:scale-[0.99] focus-visible:bg-surface-hover focus-visible:text-text-primary focus-visible:shadow-[inset_0_0_0_1px_var(--border-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+				className="interaction-surface inline-flex w-full items-center rounded-full px-3 py-1 text-[15px] leading-8 text-text-secondary"
 			>
 				<span className="inline-flex items-center gap-2">
 					{post.title}
@@ -176,11 +175,8 @@ function ExpandablePostItem({
 	return (
 		<li>
 			<div
-				className={
-					isOpen
-						? "group rounded-[1.35rem] bg-surface-hover text-text-primary shadow-[inset_0_0_0_1px_var(--border-subtle)] transition-[background-color,box-shadow,color] duration-180 ease-out"
-						: "group rounded-[1.35rem] text-text-secondary transition-[background-color,box-shadow,color] duration-180 ease-out hover:bg-surface-hover hover:text-text-primary hover:shadow-[inset_0_0_0_1px_var(--border-subtle)]"
-				}
+				data-active={isOpen ? "true" : undefined}
+				className="interaction-surface group rounded-[1.35rem] text-text-secondary"
 			>
 				<div className="flex items-center gap-1 p-1">
 					<button
@@ -188,7 +184,7 @@ function ExpandablePostItem({
 						aria-expanded={isOpen}
 						aria-controls={descriptionId}
 						onClick={onToggle}
-						className="flex min-w-0 flex-1 items-center rounded-full px-2 py-0 text-left text-[15px] leading-8 transition-[color,transform] duration-180 ease-out active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+						className="interaction-control flex min-w-0 flex-1 items-center rounded-full px-2 py-0 text-left text-[15px] leading-8"
 					>
 						<span className="truncate">{post.title}</span>
 						<span className="sr-only">

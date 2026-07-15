@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 const links = [
+	{ href: "/activity", label: "Activity" },
 	{ href: "/about", label: "About" },
-	{ href: "https://x.com/cuevaio", label: "X" },
 ];
 
 export function SiteNav({ currentPath }: { currentPath?: string }) {
@@ -11,11 +11,14 @@ export function SiteNav({ currentPath }: { currentPath?: string }) {
 			<div className="mx-auto flex w-full max-w-[44rem] items-center justify-between px-5 py-5 md:px-6 md:py-6">
 				<Link
 					href="/"
-					className="font-serif text-lg leading-none text-text-primary transition-colors hover:text-text-secondary md:text-xl"
+					className="interaction-link font-serif text-lg leading-none text-text-primary md:text-xl"
 				>
 					Anthony Cueva
 				</Link>
-				<nav className="flex items-center gap-5 text-[13px] text-text-muted">
+				<nav
+					aria-label="Primary navigation"
+					className="flex items-center gap-2 text-[13px] text-text-muted md:gap-3"
+				>
 					{links.map((link) => {
 						const isInternal = link.href.startsWith("/");
 						const isActive = currentPath === link.href;
@@ -25,10 +28,8 @@ export function SiteNav({ currentPath }: { currentPath?: string }) {
 								<Link
 									key={link.href}
 									href={link.href}
-									prefetch={link.href === "/about"}
-									className={
-										isActive ? "minimal-hover active" : "minimal-hover"
-									}
+									aria-current={isActive ? "page" : undefined}
+									className="interaction-pill"
 								>
 									{link.label}
 								</Link>
@@ -45,7 +46,7 @@ export function SiteNav({ currentPath }: { currentPath?: string }) {
 										? undefined
 										: "noopener noreferrer"
 								}
-								className="minimal-hover"
+								className="interaction-pill"
 							>
 								{link.label}
 							</a>

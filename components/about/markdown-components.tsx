@@ -19,14 +19,19 @@ export const aboutMarkdownComponents: Components = {
 	strong: ({ children }) => (
 		<strong className="font-medium text-text-primary">{children}</strong>
 	),
-	a: ({ href, children }) => (
-		<a
-			href={normalizeHref(href)}
-			target="_blank"
-			rel="noopener noreferrer"
-			className="text-text-primary underline decoration-link-decoration underline-offset-4 transition-colors hover:text-text-muted"
-		>
-			{children}
-		</a>
-	),
+	a: ({ href, children }) => {
+		const normalizedHref = normalizeHref(href);
+		const isExternal = /^(https?:|mailto:|tel:)/i.test(normalizedHref);
+
+		return (
+			<a
+				href={normalizedHref}
+				target={isExternal ? "_blank" : undefined}
+				rel={isExternal ? "noopener noreferrer" : undefined}
+				className="interaction-link text-text-primary underline decoration-link-decoration underline-offset-4"
+			>
+				{children}
+			</a>
+		);
+	},
 };

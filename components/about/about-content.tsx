@@ -19,13 +19,12 @@ export function AboutContent({ markdown }: { markdown: string }) {
 				onClick={() => setExpanded((value) => !value)}
 				aria-expanded={expanded}
 				aria-label={expanded ? "Collapse portrait" : "Expand portrait"}
-				className="relative mx-auto mb-8 block cursor-pointer overflow-hidden transition-[width,height,border-radius] duration-300 ease-out md:float-right md:mb-4 md:ml-8"
+				className="interaction-media relative mx-auto mb-8 block cursor-pointer overflow-hidden md:float-right md:mb-4 md:ml-8"
 				style={{
 					width: expanded ? expandedWidth : collapsedSize,
 					height: expanded ? expandedHeight : collapsedSize,
 					borderRadius: expanded ? 0 : collapsedSize / 2,
 					shapeOutside: expanded ? "inset(0)" : "circle(50%)",
-					WebkitShapeOutside: expanded ? "inset(0)" : "circle(50%)",
 				}}
 			>
 				<Image

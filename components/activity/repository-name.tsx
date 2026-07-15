@@ -7,13 +7,13 @@ export function RepositoryName({ name }: { name: string }) {
 	return (
 		<>
 			<span className="sm:hidden" aria-hidden="true">
-				<span className="opacity-50">
+				<span className="opacity-70">
 					{owner === "crafter-station" ? "cs" : owner}/
 				</span>
 				{repository}
 			</span>
 			<span className="hidden sm:inline" aria-hidden="true">
-				<span className="opacity-50">{owner}/</span>
+				<span className="opacity-70">{owner}/</span>
 				{repository}
 			</span>
 			<span className="sr-only">

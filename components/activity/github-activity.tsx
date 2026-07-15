@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { ExternalLinkIcon } from "@/components/activity/external-link-icon";
 import { LocalDate } from "@/components/activity/local-date";
+import { RelativeDate } from "@/components/activity/relative-date";
 import { RepositoryName } from "@/components/activity/repository-name";
 import { SortableRepositoryRows } from "@/components/activity/sortable-repository-rows";
 import type {
@@ -62,27 +63,6 @@ function formatCommitDate(date: string, includeYear = false) {
 		minute: "2-digit",
 		timeZone: "UTC",
 	}).format(new Date(date))} UTC`;
-}
-
-function formatRelativeCommitDate(date: string) {
-	const difference = new Date(date).getTime() - Date.now();
-	const absoluteDifference = Math.abs(difference);
-	const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-
-	if (absoluteDifference < 60_000) return "just now";
-	if (absoluteDifference < 3_600_000) {
-		return formatter.format(Math.round(difference / 60_000), "minute");
-	}
-	if (absoluteDifference < 86_400_000) {
-		return formatter.format(Math.round(difference / 3_600_000), "hour");
-	}
-	if (absoluteDifference < 2_592_000_000) {
-		return formatter.format(Math.round(difference / 86_400_000), "day");
-	}
-	if (absoluteDifference < 31_536_000_000) {
-		return formatter.format(Math.round(difference / 2_592_000_000), "month");
-	}
-	return formatter.format(Math.round(difference / 31_536_000_000), "year");
 }
 
 function buildContributionGraph(
@@ -200,7 +180,9 @@ function ActiveNow({ recentCommits }: { recentCommits: RecentCommit[] }) {
 								<span className="min-w-0 truncate" translate="no">
 									<RepositoryName name={commit.repository} />
 								</span>
-								<span>{formatRelativeCommitDate(commit.committedAt)}</span>
+								<span>
+									<RelativeDate date={commit.committedAt} />
+								</span>
 							</span>
 							<span className="mt-1 flex min-w-0 items-center gap-1.5">
 								<span className="min-w-0 break-words text-[12px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">

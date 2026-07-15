@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ExternalLinkIcon } from "@/components/activity/external-link-icon";
 import { GitHubActivity } from "@/components/activity/github-activity";
 import { LocalDate } from "@/components/activity/local-date";
+import { RelativeDate } from "@/components/activity/relative-date";
 import { SitePageShell } from "@/components/site-page-shell";
 import { getGitHubActivity } from "@/lib/github";
 import { siteConfig } from "@/lib/site";
@@ -38,27 +39,6 @@ function formatSocialDate(date: string) {
 		minute: "2-digit",
 		timeZone: "UTC",
 	}).format(new Date(date))} UTC`;
-}
-
-function formatRelativeSocialDate(date: string) {
-	const difference = new Date(date).getTime() - Date.now();
-	const absoluteDifference = Math.abs(difference);
-	const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-
-	if (absoluteDifference < 60_000) return "just now";
-	if (absoluteDifference < 3_600_000) {
-		return formatter.format(Math.round(difference / 60_000), "minute");
-	}
-	if (absoluteDifference < 86_400_000) {
-		return formatter.format(Math.round(difference / 3_600_000), "hour");
-	}
-	if (absoluteDifference < 2_592_000_000) {
-		return formatter.format(Math.round(difference / 86_400_000), "day");
-	}
-	if (absoluteDifference < 31_536_000_000) {
-		return formatter.format(Math.round(difference / 2_592_000_000), "month");
-	}
-	return formatter.format(Math.round(difference / 31_536_000_000), "year");
 }
 
 function formatPlatform(platform: "x" | "instagram" | "linkedin") {
@@ -123,7 +103,7 @@ export default async function ActivityPage() {
 									</h3>
 									<p className="mt-0.5 text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
 										{formatPlatform(item.platform)} ·{" "}
-										{formatRelativeSocialDate(item.publishedAt)} ·{" "}
+										<RelativeDate date={item.publishedAt} /> ·{" "}
 										<LocalDate
 											date={item.publishedAt}
 											fallback={formatSocialDate(item.publishedAt)}

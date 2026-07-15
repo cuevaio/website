@@ -36,6 +36,15 @@ export type GitHubActivityData = {
 	recentCommits: RecentCommit[];
 };
 
+export function formatRepositoryName(name: string) {
+	const [owner, ...parts] = name.split("/");
+	const repository = parts.join("/") || name;
+	const organization =
+		owner === "crafter-station" ? "cs" : owner === "cuevaio" ? "c" : owner;
+
+	return { organization, repository };
+}
+
 type ContributionRepository = {
 	repository?: {
 		nameWithOwner?: string;
@@ -70,6 +79,7 @@ const GITHUB_USERNAME = "cuevaio";
 const GITHUB_REVALIDATE_SECONDS = 21600;
 const INCLUDED_OWNERS = ["cuevaio/", "crafter-station/"];
 const RECENT_REPOSITORY_CANDIDATE_LIMIT = 12;
+const RECENT_COMMIT_LIMIT = 20;
 
 function addUtcDays(date: Date, amount: number) {
 	const result = new Date(date);
@@ -311,7 +321,7 @@ async function getRecentCommits(repositories: RepositoryContribution[]) {
 				`https://api.github.com/repos/${repository.name}/commits`,
 			);
 			url.searchParams.set("author", GITHUB_USERNAME);
-			url.searchParams.set("per_page", "3");
+			url.searchParams.set("per_page", String(RECENT_COMMIT_LIMIT));
 			const response = await fetch(url, {
 				headers: {
 					Accept: "application/vnd.github+json",
@@ -346,7 +356,8 @@ async function getRecentCommits(repositories: RepositoryContribution[]) {
 
 	return results
 		.flatMap((result) => (result.status === "fulfilled" ? result.value : []))
-		.sort((left, right) => right.committedAt.localeCompare(left.committedAt));
+		.sort((left, right) => right.committedAt.localeCompare(left.committedAt))
+		.slice(0, RECENT_COMMIT_LIMIT);
 }
 
 export async function getGitHubActivity(): Promise<GitHubActivityData> {

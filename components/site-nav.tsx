@@ -17,7 +17,7 @@ export function SiteNav({ currentPath }: { currentPath?: string }) {
 				</Link>
 				<nav
 					aria-label="Primary navigation"
-					className="flex items-center gap-2 text-[13px] text-text-muted md:gap-3"
+					className="flex items-center gap-4 text-[13px] text-text-muted"
 				>
 					{links.map((link) => {
 						const isInternal = link.href.startsWith("/");

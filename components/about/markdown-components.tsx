@@ -1,4 +1,5 @@
 import type { Components } from "react-markdown";
+import { ExternalLinkIcon } from "@/components/activity/external-link-icon";
 
 function normalizeHref(href?: string) {
 	if (!href) return "#";
@@ -28,9 +29,10 @@ export const aboutMarkdownComponents: Components = {
 				href={normalizedHref}
 				target={isExternal ? "_blank" : undefined}
 				rel={isExternal ? "noopener noreferrer" : undefined}
-				className="interaction-link text-text-primary underline decoration-link-decoration underline-offset-4"
+				className="link-with-arrow interaction-link group inline-flex items-center text-text-primary underline decoration-link-decoration underline-offset-4"
 			>
 				{children}
+				<ExternalLinkIcon collapse />
 			</a>
 		);
 	},

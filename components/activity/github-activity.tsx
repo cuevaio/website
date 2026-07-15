@@ -8,6 +8,7 @@ import type {
 	RecentCommit,
 	RepositoryContribution,
 } from "@/lib/github";
+import { formatRepositoryName } from "@/lib/github";
 
 const emptyActivityClassName =
 	"bg-surface-hover shadow-[inset_0_0_0_1px_var(--border-strong)]";
@@ -43,26 +44,6 @@ function formatLongDate(date: string) {
 		year: "numeric",
 		timeZone: "UTC",
 	}).format(new Date(`${date}T00:00:00Z`));
-}
-
-function formatShortDate(date: string) {
-	return new Intl.DateTimeFormat("en", {
-		month: "short",
-		day: "numeric",
-		timeZone: "UTC",
-	}).format(new Date(`${date}T00:00:00Z`));
-}
-
-function formatRepositoryLastActive(
-	repository: RepositoryContribution,
-	long = false,
-) {
-	const date = long
-		? formatLongDate(repository.lastContributionAt)
-		: formatShortDate(repository.lastContributionAt);
-	return repository.lastContributionPrecision === "day"
-		? date
-		: `Week of ${date}`;
 }
 
 function formatMonth(key: string, includeYear = false) {
@@ -187,83 +168,8 @@ function buildAtlasRepositories(
 		);
 }
 
-function getActiveRepositories(
-	repositories: RepositoryContribution[],
-	recentCommits: RecentCommit[],
-) {
-	const commitsByRepository = new Map<string, RecentCommit[]>();
-	for (const commit of recentCommits) {
-		const commits = commitsByRepository.get(commit.repository) ?? [];
-		commits.push(commit);
-		commitsByRepository.set(commit.repository, commits);
-	}
-
-	const withExactCommits = repositories
-		.map((repository) => ({
-			...repository,
-			commits: commitsByRepository.get(repository.name) ?? [],
-		}))
-		.filter((repository) => repository.commits.length > 0)
-		.sort(
-			(left, right) =>
-				right.commits[0].committedAt.localeCompare(
-					left.commits[0].committedAt,
-				) || left.name.localeCompare(right.name),
-		);
-
-	if (withExactCommits.length > 0) return withExactCommits.slice(0, 4);
-
-	return [...repositories]
-		.sort(
-			(left, right) =>
-				right.lastContributionAt.localeCompare(left.lastContributionAt) ||
-				left.name.localeCompare(right.name),
-		)
-		.slice(0, 4)
-		.map((repository) => ({ ...repository, commits: [] }));
-}
-
-function RepositoryName({
-	name,
-	showLinkIcon = false,
-}: {
-	name: string;
-	showLinkIcon?: boolean;
-}) {
-	const [owner, ...parts] = name.split("/");
-	const label = parts.join("/") || name;
-
-	return (
-		<>
-			<span className="flex min-w-0 items-center gap-1.5">
-				<span className="min-w-0 break-words text-text-primary">{label}</span>
-				{showLinkIcon ? <ExternalLinkIcon /> : null}
-			</span>
-			<span className="block text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 sm:hidden">
-				{owner === "crafter-station" ? "cs" : "personal"}
-			</span>
-			<span
-				className="hidden text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 sm:block"
-				translate="no"
-			>
-				{owner}
-			</span>
-		</>
-	);
-}
-
-function ActiveNow({
-	repositories,
-	recentCommits,
-}: {
-	repositories: RepositoryContribution[];
-	recentCommits: RecentCommit[];
-}) {
-	const active = getActiveRepositories(repositories, recentCommits);
-	if (active.length === 0) return null;
-	const hasExactCommits = active.some(
-		(repository) => repository.commits.length > 0,
-	);
+function ActiveNow({ recentCommits }: { recentCommits: RecentCommit[] }) {
+	if (recentCommits.length === 0) return null;
 
 	return (
 		<section
@@ -274,100 +180,38 @@ function ActiveNow({
 				Active now
 			</h2>
 			<p className="mt-1 text-[13px] text-text-faint">
-				{hasExactCommits
-					? "My latest commits across public repositories."
-					: "Recently active public repositories."}
+				My latest 20 commits across public repositories.
 			</p>
-			<ul className="mt-4 border-t border-border-subtle">
-				{active.map((repository) => (
-					<li key={repository.name} className="border-b border-border-subtle">
-						{repository.commits.length > 0 ? (
-							<details className="group/repository">
-								<summary className="activity-row interaction-surface group flex min-h-16 w-full min-w-0 cursor-pointer list-none items-center justify-between gap-4 py-3">
-									<span className="min-w-0 text-[13px]">
-										<RepositoryName name={repository.name} />
-									</span>
-									<span className="flex shrink-0 items-center gap-3 text-right">
-										<span>
-											<span className="block text-[11px] text-text-muted">
-												<LocalDate
-													date={repository.commits[0].committedAt}
-													fallback={formatCommitDate(
-														repository.commits[0].committedAt,
-													)}
-												/>
-											</span>
-											<span className="block text-[10px] text-text-faint">
-												<LocalDate
-													date={repository.commits[0].committedAt}
-													fallback={formatRelativeCommitDate(
-														repository.commits[0].committedAt,
-													)}
-													relative
-												/>
-											</span>
-										</span>
-										<span
-											className="w-3 text-center text-[14px] text-text-faint transition-transform duration-150 group-open/repository:rotate-45"
-											aria-hidden="true"
-										>
-											+
-										</span>
-									</span>
-								</summary>
-								<div className="min-w-0 overflow-hidden pb-4 pl-3 sm:pl-5">
-									<ol className="min-w-0 pl-3 sm:pl-4">
-										{repository.commits.map((commit) => (
-											<li key={commit.sha}>
-												<a
-													href={commit.href}
-													target="_blank"
-													rel="noopener noreferrer"
-													className="activity-row link-with-arrow interaction-surface group block min-w-0 py-2"
-												>
-													<span className="flex min-w-0 items-center gap-1.5">
-														<span className="min-w-0 break-words text-[12px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
-															{commit.message}
-														</span>
-														<ExternalLinkIcon />
-													</span>
-													<span className="mt-0.5 block break-words text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-														{commit.sha.slice(0, 7)} ·{" "}
-														<LocalDate
-															date={commit.committedAt}
-															fallback={formatCommitDate(commit.committedAt)}
-														/>
-													</span>
-												</a>
-											</li>
-										))}
-									</ol>
-									<a
-										href={repository.href}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="link-with-arrow interaction-link group mt-2 inline-flex items-center gap-1.5 text-[11px] text-text-faint"
-									>
-										<span>View repository</span>
-										<ExternalLinkIcon />
-									</a>
-								</div>
-							</details>
-						) : (
-							<a
-								href={repository.href}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="activity-row link-with-arrow interaction-surface group flex min-h-16 w-full min-w-0 items-center justify-between gap-4 py-3"
-							>
-								<span className="min-w-0 text-[13px]">
-									<RepositoryName name={repository.name} showLinkIcon />
+			<ul className="mt-4 space-y-0.5">
+				{recentCommits.map((commit) => (
+					<li key={`${commit.repository}-${commit.sha}`}>
+						<a
+							href={commit.href}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="activity-row link-with-arrow interaction-surface group block min-w-0 py-2"
+						>
+							<span className="flex items-baseline justify-between gap-4 text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+								<span className="min-w-0 truncate" translate="no">
+									{formatRepositoryName(commit.repository).organization}/
+									{formatRepositoryName(commit.repository).repository}
 								</span>
-								<span className="text-[10px] text-text-faint">
-									{formatRepositoryLastActive(repository)}
+								<span>{formatRelativeCommitDate(commit.committedAt)}</span>
+							</span>
+							<span className="mt-1 flex min-w-0 items-center gap-1.5">
+								<span className="min-w-0 break-words text-[12px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
+									{commit.message}
 								</span>
-							</a>
-						)}
+								<ExternalLinkIcon />
+							</span>
+							<span className="mt-0.5 block text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+								{commit.sha.slice(0, 7)} ·{" "}
+								<LocalDate
+									date={commit.committedAt}
+									fallback={formatCommitDate(commit.committedAt)}
+								/>
+							</span>
+						</a>
 					</li>
 				))}
 			</ul>
@@ -511,10 +355,7 @@ export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 				</p>
 			)}
 
-			<ActiveNow
-				repositories={activity.repositories}
-				recentCommits={activity.recentCommits}
-			/>
+			<ActiveNow recentCommits={activity.recentCommits} />
 			<RepositoryAtlas
 				repositories={activity.repositories}
 				startDate={startDate}

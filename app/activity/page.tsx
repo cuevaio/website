@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ExternalLinkIcon } from "@/components/activity/external-link-icon";
 import { GitHubActivity } from "@/components/activity/github-activity";
 import { SitePageShell } from "@/components/site-page-shell";
 import { getGitHubActivity } from "@/lib/github";
@@ -75,17 +76,15 @@ export default async function ActivityPage() {
 								href={item.href}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="interaction-surface group -mx-3 block rounded-[1.25rem] px-3 py-3"
+								className="link-with-arrow interaction-surface group block py-3"
 							>
-								<div className="flex items-baseline justify-between gap-4">
+								<div className="flex items-center gap-1.5">
 									<h3 className="text-[15px] text-text-primary">
 										{item.title}
 									</h3>
-									<p className="shrink-0 text-[12px] text-text-faint">
-										{item.platform}
-									</p>
+									<ExternalLinkIcon />
 								</div>
-								<p className="mt-2 text-[14px] leading-6 text-text-muted">
+								<p className="mt-1 text-[13px] leading-5 text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
 									{item.detail}
 								</p>
 							</a>

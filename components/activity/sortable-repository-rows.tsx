@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@/components/activity/external-link-icon";
-import type { RepositoryContribution } from "@/lib/github";
+import {
+	formatRepositoryName,
+	type RepositoryContribution,
+} from "@/lib/github";
 
 const SORT_STORAGE_KEY = "activity-atlas-sort";
 const emptyActivityClassName =
@@ -56,23 +59,15 @@ function getIntensityLevel(count: number, maxCount: number) {
 }
 
 function RepositoryLabel({ name }: { name: string }) {
-	const [owner, ...parts] = name.split("/");
-	const label = parts.join("/") || name;
+	const { organization, repository } = formatRepositoryName(name);
 
 	return (
 		<span className="min-w-0 pr-2 text-[11px] leading-tight sm:text-[12px]">
 			<span className="flex min-w-0 items-center gap-1.5">
-				<span className="min-w-0 break-words text-text-primary">{label}</span>
+				<span className="min-w-0 break-words text-text-primary">
+					{organization}/{repository}
+				</span>
 				<ExternalLinkIcon />
-			</span>
-			<span className="block text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 sm:hidden">
-				{owner === "crafter-station" ? "cs" : "personal"}
-			</span>
-			<span
-				className="hidden text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 sm:block"
-				translate="no"
-			>
-				{owner}
 			</span>
 		</span>
 	);
@@ -153,17 +148,14 @@ export function SortableRepositoryRows({
 				))}
 			</div>
 
-			<div
-				className="atlas-sort-content border-t border-border-subtle"
-				data-ready={ready}
-			>
+			<div className="atlas-sort-content space-y-0.5" data-ready={ready}>
 				{sortedRepositories.map((repository) => (
 					<a
 						key={repository.name}
 						href={repository.href}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="activity-row link-with-arrow interaction-surface atlas-grid group min-h-11 items-center border-b border-border-subtle py-1.5"
+						className="activity-row link-with-arrow interaction-surface atlas-grid group min-h-10 items-center py-2"
 						aria-label={`${repository.name}, ${formatCount(repository.total)} commits across ${repository.activeMonths} active ${repository.activeMonths === 1 ? "month" : "months"}, ${repository.months
 							.filter((month) => month.count > 0)
 							.map(

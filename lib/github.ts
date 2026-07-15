@@ -18,6 +18,7 @@ export type RepositoryContribution = {
 	href: string;
 	total: number;
 	lastContributionAt: string;
+	lastContributionPrecision: "day" | "week";
 	weeks: Array<{ date: string; count: number }>;
 };
 
@@ -125,6 +126,8 @@ async function getRollingContributions(startDate: string, endDate: string) {
 		(_, index) => startYear + index,
 	);
 	const results = await Promise.allSettled(years.map(getContributionYear));
+	if (results.some((result) => result.status === "rejected")) return null;
+
 	const days = results
 		.flatMap((result) => (result.status === "fulfilled" ? result.value : []))
 		.filter((day) => day.date >= startDate && day.date <= endDate)
@@ -140,7 +143,10 @@ async function getRollingContributions(startDate: string, endDate: string) {
 	};
 }
 
-function getRepositorySnapshot(startDate: string, endDate: string) {
+function getRepositorySnapshot(
+	startDate: string,
+	endDate: string,
+): RepositoryContribution[] {
 	return githubRepositorySnapshot.flatMap((repository) => {
 		const weeks = repository.weeks
 			.filter(
@@ -162,6 +168,8 @@ function getRepositorySnapshot(startDate: string, endDate: string) {
 					"lastContributionAt" in repository
 						? repository.lastContributionAt
 						: (weeks.at(-1)?.date ?? endDate),
+				lastContributionPrecision:
+					"lastContributionAt" in repository ? "day" : "week",
 				weeks,
 			},
 		];
@@ -211,7 +219,7 @@ async function getRepositoryContributions(
 		const repositories =
 			payload.data?.user?.contributionsCollection
 				?.commitContributionsByRepository ?? [];
-		const activity = repositories.flatMap((entry) => {
+		const activity: RepositoryContribution[] = repositories.flatMap((entry) => {
 			const name = entry.repository?.nameWithOwner;
 			const nodes = entry.contributions?.nodes ?? [];
 			const contributionDates = nodes
@@ -254,6 +262,7 @@ async function getRepositoryContributions(
 						0,
 					),
 					lastContributionAt: contributionDates[contributionDates.length - 1],
+					lastContributionPrecision: "day",
 					weeks,
 				},
 			];

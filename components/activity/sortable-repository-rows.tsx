@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@/components/activity/external-link-icon";
-import {
-	formatRepositoryName,
-	type RepositoryContribution,
-} from "@/lib/github";
+import { RepositoryName } from "@/components/activity/repository-name";
+import type { RepositoryContribution } from "@/lib/github";
 
 const SORT_STORAGE_KEY = "activity-atlas-sort";
 const emptyActivityClassName =
@@ -59,13 +57,11 @@ function getIntensityLevel(count: number, maxCount: number) {
 }
 
 function RepositoryLabel({ name }: { name: string }) {
-	const { organization, repository } = formatRepositoryName(name);
-
 	return (
 		<span className="min-w-0 pr-2 text-[11px] leading-tight sm:text-[12px]">
 			<span className="flex min-w-0 items-center gap-1.5">
 				<span className="min-w-0 break-words text-text-primary">
-					{organization}/{repository}
+					<RepositoryName name={name} />
 				</span>
 				<ExternalLinkIcon />
 			</span>

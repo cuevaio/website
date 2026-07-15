@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { ExternalLinkIcon } from "@/components/activity/external-link-icon";
 import { LocalDate } from "@/components/activity/local-date";
+import { RepositoryName } from "@/components/activity/repository-name";
 import { SortableRepositoryRows } from "@/components/activity/sortable-repository-rows";
 import type {
 	ContributionDay,
@@ -8,7 +9,6 @@ import type {
 	RecentCommit,
 	RepositoryContribution,
 } from "@/lib/github";
-import { formatRepositoryName } from "@/lib/github";
 
 const emptyActivityClassName =
 	"bg-surface-hover shadow-[inset_0_0_0_1px_var(--border-strong)]";
@@ -193,8 +193,7 @@ function ActiveNow({ recentCommits }: { recentCommits: RecentCommit[] }) {
 						>
 							<span className="flex items-baseline justify-between gap-4 text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
 								<span className="min-w-0 truncate" translate="no">
-									{formatRepositoryName(commit.repository).organization}/
-									{formatRepositoryName(commit.repository).repository}
+									<RepositoryName name={commit.repository} />
 								</span>
 								<span>{formatRelativeCommitDate(commit.committedAt)}</span>
 							</span>
@@ -304,10 +303,10 @@ export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 							href="https://github.com/cuevaio"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="link-with-arrow interaction-link group inline-flex shrink-0 items-center gap-1.5 text-[12px] text-text-faint"
+							className="link-with-arrow interaction-link group ml-auto inline-flex shrink-0 items-center text-[12px] text-text-faint"
 						>
 							<span>GitHub</span>
-							<ExternalLinkIcon />
+							<ExternalLinkIcon collapse />
 						</a>
 					</div>
 					<div className="mt-5 w-full">

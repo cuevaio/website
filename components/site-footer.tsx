@@ -16,18 +16,18 @@ export function SiteFooter() {
 				<p>cueva.io</p>
 				<div className="flex flex-wrap items-center gap-x-3 gap-y-2 sm:gap-4">
 					{links.map((link) => {
-						const external = link.href.startsWith("http");
+						const opensNewTab = link.href.startsWith("http");
 
 						return (
 							<a
 								key={link.href}
 								href={link.href}
-								target={external ? "_blank" : undefined}
-								rel={external ? "noopener noreferrer" : undefined}
+								target={opensNewTab ? "_blank" : undefined}
+								rel={opensNewTab ? "noopener noreferrer" : undefined}
 								className="link-with-arrow interaction-link group inline-flex items-center"
 							>
 								{link.label}
-								{external ? <ExternalLinkIcon collapse /> : null}
+								<ExternalLinkIcon collapse />
 							</a>
 						);
 					})}

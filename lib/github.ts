@@ -36,15 +36,6 @@ export type GitHubActivityData = {
 	recentCommits: RecentCommit[];
 };
 
-export function formatRepositoryName(name: string) {
-	const [owner, ...parts] = name.split("/");
-	const repository = parts.join("/") || name;
-	const organization =
-		owner === "crafter-station" ? "cs" : owner === "cuevaio" ? "c" : owner;
-
-	return { organization, repository };
-}
-
 type ContributionRepository = {
 	repository?: {
 		nameWithOwner?: string;

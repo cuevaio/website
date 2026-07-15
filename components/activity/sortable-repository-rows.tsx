@@ -60,7 +60,7 @@ function RepositoryLabel({ name }: { name: string }) {
 	return (
 		<span className="min-w-0 pr-2 text-[11px] leading-tight sm:text-[12px]">
 			<span className="flex min-w-0 items-center gap-1.5">
-				<span className="min-w-0 break-words text-text-primary">
+				<span className="min-w-0 break-words text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
 					<RepositoryName name={name} />
 				</span>
 				<ExternalLinkIcon />

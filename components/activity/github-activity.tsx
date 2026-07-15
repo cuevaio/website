@@ -130,6 +130,18 @@ function getMonthKeys(startDate: string, endDate: string) {
 	return keys;
 }
 
+function subtractUtcMonths(date: string, amount: number) {
+	const result = new Date(`${date}T00:00:00Z`);
+	const day = result.getUTCDate();
+	result.setUTCDate(1);
+	result.setUTCMonth(result.getUTCMonth() - amount);
+	const lastDay = new Date(
+		Date.UTC(result.getUTCFullYear(), result.getUTCMonth() + 1, 0),
+	).getUTCDate();
+	result.setUTCDate(Math.min(day, lastDay));
+	return toDateString(result);
+}
+
 function getIntensityLevel(count: number, maxCount: number) {
 	if (count <= 0 || maxCount <= 0) return 0;
 	const normalized = Math.log1p(count) / Math.log1p(maxCount);
@@ -228,7 +240,17 @@ function RepositoryAtlas({
 	endDate: string;
 }) {
 	const monthKeys = getMonthKeys(startDate, endDate);
-	const atlasRepositories = buildAtlasRepositories(repositories, monthKeys);
+	const recentCutoff = subtractUtcMonths(endDate, 6);
+	const atlasRepositories = buildAtlasRepositories(
+		repositories.filter((repository) =>
+			repository.weeks.some(
+				(week) =>
+					toDateString(addUtcDays(new Date(`${week.date}T00:00:00Z`), 6)) >=
+					recentCutoff,
+			),
+		),
+		monthKeys,
+	);
 	const maxCount = atlasRepositories.reduce(
 		(maximum, repository) =>
 			Math.max(maximum, ...repository.months.map((month) => month.count)),

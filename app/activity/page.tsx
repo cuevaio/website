@@ -40,6 +40,40 @@ function formatSocialDate(date: string) {
 	}).format(new Date(date))} UTC`;
 }
 
+function formatRelativeSocialDate(date: string) {
+	const difference = new Date(date).getTime() - Date.now();
+	const absoluteDifference = Math.abs(difference);
+	const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+	if (absoluteDifference < 60_000) return "just now";
+	if (absoluteDifference < 3_600_000) {
+		return formatter.format(Math.round(difference / 60_000), "minute");
+	}
+	if (absoluteDifference < 86_400_000) {
+		return formatter.format(Math.round(difference / 3_600_000), "hour");
+	}
+	if (absoluteDifference < 2_592_000_000) {
+		return formatter.format(Math.round(difference / 86_400_000), "day");
+	}
+	if (absoluteDifference < 31_536_000_000) {
+		return formatter.format(Math.round(difference / 2_592_000_000), "month");
+	}
+	return formatter.format(Math.round(difference / 31_536_000_000), "year");
+}
+
+function formatPlatform(platform: "x" | "instagram" | "linkedin") {
+	if (platform === "x") return "X";
+	if (platform === "instagram") return "Instagram";
+	return "LinkedIn";
+}
+
+function formatSocialText(text: string) {
+	const normalized = text.replaceAll(/\s+/g, " ").trim();
+	return normalized.length > 140
+		? `${normalized.slice(0, 139).trimEnd()}…`
+		: normalized;
+}
+
 export default async function ActivityPage() {
 	const [githubActivity, socialActivity] = await Promise.all([
 		getGitHubActivity(),
@@ -76,13 +110,20 @@ export default async function ActivityPage() {
 									rel="noopener noreferrer"
 									className="link-with-arrow interaction-surface group block py-2"
 								>
-									<div className="flex items-center gap-1.5">
-										<h3 className="line-clamp-2 text-[13px] leading-5 text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
-											{item.text}
-										</h3>
-										<ExternalLinkIcon />
-									</div>
+									<h3
+										title={item.text}
+										className="text-[13px] leading-5 text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary"
+									>
+										<span>
+											{formatSocialText(item.text)}
+											<span className="ml-1 inline-flex translate-y-0.5">
+												<ExternalLinkIcon />
+											</span>
+										</span>
+									</h3>
 									<p className="mt-0.5 text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+										{formatPlatform(item.platform)} ·{" "}
+										{formatRelativeSocialDate(item.publishedAt)} ·{" "}
 										<LocalDate
 											date={item.publishedAt}
 											fallback={formatSocialDate(item.publishedAt)}

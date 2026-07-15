@@ -56,15 +56,15 @@ export default async function ActivityPage() {
 			<h1 className="font-serif text-lg leading-none text-text-primary md:text-xl">
 				Activity
 			</h1>
-			<p className="mt-5 text-[15px] leading-7 text-text-muted">
+			<p className="mt-4 text-[15px] leading-7 text-text-muted sm:mt-5">
 				What I've been building, in public.
 			</p>
 
-			<section className="mt-12" aria-label="GitHub activity">
+			<section className="mt-10 sm:mt-12" aria-label="GitHub activity">
 				<GitHubActivity activity={githubActivity} />
 			</section>
 
-			<section className="mt-14" aria-labelledby="elsewhere-activity">
+			<section className="mt-12 sm:mt-14" aria-labelledby="elsewhere-activity">
 				<h2 id="elsewhere-activity" className="text-[15px] text-text-primary">
 					Elsewhere
 				</h2>

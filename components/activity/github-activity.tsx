@@ -133,10 +133,10 @@ function RepositoryRow({
 			href={repository.href}
 			target="_blank"
 			rel="noopener noreferrer"
-			className="interaction-surface group -mx-2 grid grid-cols-[minmax(0,7.5rem)_minmax(5rem,1fr)] items-center gap-3 rounded-xl px-2 py-1.5 sm:grid-cols-[minmax(0,12rem)_minmax(8rem,1fr)]"
+			className="interaction-surface group -mx-2 grid grid-cols-1 gap-2 rounded-xl px-2 py-2 sm:grid-cols-[minmax(0,12rem)_minmax(8rem,1fr)] sm:items-center sm:gap-3 sm:py-1.5"
 			aria-label={`${repository.name}, ${repository.total} commits across ${repository.weeks.length} active weeks in the last year`}
 		>
-			<span className="min-w-0 truncate text-[11px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary sm:text-[12px]">
+			<span className="min-w-0 truncate text-[12px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
 				<span className="text-text-faint sm:hidden">
 					{owner === "crafter-station" ? "cs" : owner}/
 				</span>
@@ -156,7 +156,7 @@ function RepositoryRow({
 						<span
 							key={date}
 							title={label}
-							className={`h-3 min-w-0 rounded-[1px] ${count === 0 ? emptyActivityClassName : "bg-text-primary"}`}
+							className={`h-2 min-w-0 rounded-[1px] sm:h-3 ${count === 0 ? emptyActivityClassName : "bg-text-primary"}`}
 							style={intensity ? { opacity: intensity } : undefined}
 						/>
 					);
@@ -191,7 +191,7 @@ function RepositoryTimeline({
 	if (featured.length === 0) return null;
 
 	return (
-		<section className="mt-14" aria-labelledby="repository-activity">
+		<section className="mt-12 sm:mt-14" aria-labelledby="repository-activity">
 			<h2 id="repository-activity" className="text-[15px] text-text-primary">
 				Repositories
 			</h2>
@@ -199,9 +199,9 @@ function RepositoryTimeline({
 				Where the work landed over the last year.
 			</p>
 
-			<div className="mt-5">
-				<div className="grid grid-cols-[minmax(0,7.5rem)_minmax(5rem,1fr)] items-end gap-3 px-2 pb-2 sm:grid-cols-[minmax(0,12rem)_minmax(8rem,1fr)]">
-					<span />
+			<div className="mt-4 sm:mt-5">
+				<div className="-mx-2 grid grid-cols-1 items-end px-2 pb-2 sm:grid-cols-[minmax(0,12rem)_minmax(8rem,1fr)] sm:gap-3">
+					<span className="hidden sm:block" />
 					<span className="flex justify-between text-[10px] text-text-faint">
 						<span>{formatMonth(startDate)}</span>
 						<span>{formatMonth(midpoint)}</span>
@@ -209,7 +209,7 @@ function RepositoryTimeline({
 					</span>
 				</div>
 
-				<div className="space-y-0.5">
+				<div className="space-y-1 sm:space-y-0.5">
 					{featured.map((repository) => (
 						<RepositoryRow
 							key={repository.name}
@@ -222,7 +222,7 @@ function RepositoryTimeline({
 
 				{remaining.length > 0 ? (
 					<details className="group/details mt-2 open:mt-0 open:flex open:flex-col">
-						<summary className="interaction-pill cursor-pointer list-none self-start text-[12px] text-text-faint group-open/details:order-2 group-open/details:mt-2">
+						<summary className="interaction-pill -ml-2 cursor-pointer list-none self-start text-[12px] text-text-faint group-open/details:order-2 group-open/details:mt-2">
 							<span className="group-open/details:hidden">
 								Show {remaining.length} more
 							</span>
@@ -230,7 +230,7 @@ function RepositoryTimeline({
 								Show less
 							</span>
 						</summary>
-						<div className="mt-2 space-y-0.5 group-open/details:order-1 group-open/details:mt-0">
+						<div className="mt-2 space-y-1 group-open/details:order-1 group-open/details:mt-0 sm:space-y-0.5">
 							{remaining.map((repository) => (
 								<RepositoryRow
 									key={repository.name}
@@ -249,6 +249,9 @@ function RepositoryTimeline({
 
 export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 	const contributions = activity.contributions;
+	const formattedContributionTotal = contributions
+		? new Intl.NumberFormat("en-US").format(contributions.total)
+		: "";
 	const maxContributionCount =
 		contributions?.days.reduce(
 			(maximum, day) => Math.max(maximum, day.count),
@@ -259,10 +262,14 @@ export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 		<div>
 			{contributions ? (
 				<>
-					<div className="flex items-baseline justify-between gap-4">
-						<p className="text-[15px] text-text-primary">
-							{new Intl.NumberFormat("en-US").format(contributions.total)}{" "}
-							contributions in the last year
+					<div className="flex items-baseline justify-between gap-2 sm:gap-4">
+						<p className="text-[14px] text-text-primary min-[360px]:text-[15px]">
+							<span className="min-[360px]:hidden">
+								{formattedContributionTotal} contributions · 1 year
+							</span>
+							<span className="hidden min-[360px]:inline">
+								{formattedContributionTotal} contributions in the last year
+							</span>
 						</p>
 						<a
 							href="https://github.com/cuevaio"

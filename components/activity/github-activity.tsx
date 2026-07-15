@@ -130,15 +130,10 @@ function getMonthKeys(startDate: string, endDate: string) {
 	return keys;
 }
 
-function subtractUtcMonths(date: string, amount: number) {
+function getTrailingMonthStart(date: string, monthCount: number) {
 	const result = new Date(`${date}T00:00:00Z`);
-	const day = result.getUTCDate();
 	result.setUTCDate(1);
-	result.setUTCMonth(result.getUTCMonth() - amount);
-	const lastDay = new Date(
-		Date.UTC(result.getUTCFullYear(), result.getUTCMonth() + 1, 0),
-	).getUTCDate();
-	result.setUTCDate(Math.min(day, lastDay));
+	result.setUTCMonth(result.getUTCMonth() - (monthCount - 1));
 	return toDateString(result);
 }
 
@@ -232,15 +227,13 @@ function ActiveNow({ recentCommits }: { recentCommits: RecentCommit[] }) {
 
 function RepositoryAtlas({
 	repositories,
-	startDate,
 	endDate,
 }: {
 	repositories: RepositoryContribution[];
-	startDate: string;
 	endDate: string;
 }) {
-	const monthKeys = getMonthKeys(startDate, endDate);
-	const recentCutoff = subtractUtcMonths(endDate, 6);
+	const recentCutoff = getTrailingMonthStart(endDate, 6);
+	const monthKeys = getMonthKeys(recentCutoff, endDate);
 	const atlasRepositories = buildAtlasRepositories(
 		repositories.filter((repository) =>
 			repository.weeks.some(
@@ -301,9 +294,6 @@ function RepositoryAtlas({
 export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 	const contributions = activity.contributions;
 	const endDate = contributions?.endDate ?? toDateString(new Date());
-	const startDate =
-		contributions?.startDate ??
-		toDateString(addUtcDays(new Date(`${endDate}T00:00:00Z`), -364));
 	const formattedContributionTotal = contributions
 		? new Intl.NumberFormat("en-US").format(contributions.total)
 		: "";
@@ -377,11 +367,7 @@ export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 			)}
 
 			<ActiveNow recentCommits={activity.recentCommits} />
-			<RepositoryAtlas
-				repositories={activity.repositories}
-				startDate={startDate}
-				endDate={endDate}
-			/>
+			<RepositoryAtlas repositories={activity.repositories} endDate={endDate} />
 		</div>
 	);
 }

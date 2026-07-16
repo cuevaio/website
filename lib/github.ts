@@ -57,18 +57,23 @@ type GitHubGraphQLResponse = {
 	};
 };
 
-type GitHubCommitResponse = Array<{
-	sha?: string;
-	html_url?: string;
-	commit?: {
-		message?: string;
-		author?: { date?: string } | null;
-	};
-}>;
+type GitHubCommitSearchResponse = {
+	items?: Array<{
+		sha?: string;
+		html_url?: string;
+		repository?: {
+			full_name?: string;
+			private?: boolean;
+		};
+		commit?: {
+			message?: string;
+			author?: { date?: string } | null;
+		};
+	}>;
+};
 
 const GITHUB_USERNAME = "cuevaio";
 const INCLUDED_OWNERS = ["cuevaio/", "crafter-station/"];
-const RECENT_REPOSITORY_CANDIDATE_LIMIT = 12;
 const RECENT_COMMIT_LIMIT = 20;
 
 function addUtcDays(date: Date, amount: number) {
@@ -293,52 +298,54 @@ async function getRepositoryContributions(
 	}
 }
 
-async function getRecentCommits(repositories: RepositoryContribution[]) {
+async function getRecentCommits() {
 	const token = process.env.GITHUB_TOKEN;
-	const candidates = [...repositories]
-		.sort(
-			(left, right) =>
-				right.lastContributionAt.localeCompare(left.lastContributionAt) ||
-				left.name.localeCompare(right.name),
-		)
-		.slice(0, RECENT_REPOSITORY_CANDIDATE_LIMIT);
-
 	const results = await Promise.allSettled(
-		candidates.map(async (repository): Promise<RecentCommit[]> => {
-			const url = new URL(
-				`https://api.github.com/repos/${repository.name}/commits`,
-			);
-			url.searchParams.set("author", GITHUB_USERNAME);
-			url.searchParams.set("per_page", String(RECENT_COMMIT_LIMIT));
-			const response = await fetch(url, {
-				headers: {
-					Accept: "application/vnd.github+json",
-					...(token ? { Authorization: `Bearer ${token}` } : {}),
-					"User-Agent": "cueva.io",
-					"X-GitHub-Api-Version": "2022-11-28",
-				},
-			});
-
-			if (!response.ok) return [];
-			const commits = (await response.json()) as GitHubCommitResponse;
-
-			return commits.flatMap((commit) => {
-				const committedAt = commit.commit?.author?.date;
-				const message = commit.commit?.message?.split("\n", 1)[0]?.trim();
-				if (!commit.sha || !commit.html_url || !committedAt || !message)
-					return [];
-
-				return [
-					{
-						repository: repository.name,
-						sha: commit.sha,
-						href: commit.html_url,
-						message,
-						committedAt,
+		["user:cuevaio", "org:crafter-station"].map(
+			async (scope): Promise<RecentCommit[]> => {
+				const url = new URL("https://api.github.com/search/commits");
+				url.searchParams.set("q", `author:${GITHUB_USERNAME} ${scope}`);
+				url.searchParams.set("sort", "committer-date");
+				url.searchParams.set("order", "desc");
+				url.searchParams.set("per_page", String(RECENT_COMMIT_LIMIT));
+				const response = await fetch(url, {
+					headers: {
+						Accept: "application/vnd.github+json",
+						...(token ? { Authorization: `Bearer ${token}` } : {}),
+						"User-Agent": "cueva.io",
+						"X-GitHub-Api-Version": "2022-11-28",
 					},
-				];
-			});
-		}),
+				});
+
+				if (!response.ok) return [];
+				const payload = (await response.json()) as GitHubCommitSearchResponse;
+
+				return (payload.items ?? []).flatMap((commit) => {
+					const committedAt = commit.commit?.author?.date;
+					const message = commit.commit?.message?.split("\n", 1)[0]?.trim();
+					const repository = commit.repository?.full_name;
+					if (
+						!commit.sha ||
+						!commit.html_url ||
+						!repository ||
+						commit.repository?.private !== false ||
+						!committedAt ||
+						!message
+					)
+						return [];
+
+					return [
+						{
+							repository,
+							sha: commit.sha,
+							href: commit.html_url,
+							message,
+							committedAt,
+						},
+					];
+				});
+			},
+		),
 	);
 
 	return results
@@ -352,15 +359,14 @@ export async function getGitHubActivity(): Promise<GitHubActivityData> {
 	const startDate = toDateString(
 		addUtcDays(new Date(`${endDate}T00:00:00Z`), -364),
 	);
-	const contributionPromise = getRollingContributions(startDate, endDate);
-	const repositories = await getRepositoryContributions(startDate, endDate);
-	const [contributionResult, recentCommits] = await Promise.all([
-		contributionPromise,
-		getRecentCommits(repositories),
+	const [contributions, repositories, recentCommits] = await Promise.all([
+		getRollingContributions(startDate, endDate),
+		getRepositoryContributions(startDate, endDate),
+		getRecentCommits(),
 	]);
 
 	return {
-		contributions: contributionResult,
+		contributions,
 		repositories,
 		recentCommits,
 	};

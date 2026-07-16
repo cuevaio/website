@@ -8,7 +8,7 @@ import { getGitHubActivity } from "@/lib/github";
 import { siteConfig } from "@/lib/site";
 import { getSocialActivity } from "@/lib/social-activity";
 
-export const revalidate = 21600;
+export const revalidate = 900;
 
 export const metadata: Metadata = {
 	title: "Activity",

@@ -67,7 +67,6 @@ type GitHubCommitResponse = Array<{
 }>;
 
 const GITHUB_USERNAME = "cuevaio";
-const GITHUB_REVALIDATE_SECONDS = 21600;
 const INCLUDED_OWNERS = ["cuevaio/", "crafter-station/"];
 const RECENT_REPOSITORY_CANDIDATE_LIMIT = 12;
 const RECENT_COMMIT_LIMIT = 20;
@@ -127,7 +126,6 @@ async function getContributionYear(year: number) {
 				Accept: "text/html",
 				"User-Agent": "cueva.io",
 			},
-			next: { revalidate: GITHUB_REVALIDATE_SECONDS },
 		},
 	);
 
@@ -230,7 +228,6 @@ async function getRepositoryContributions(
 					to: `${endDate}T23:59:59Z`,
 				},
 			}),
-			next: { revalidate: GITHUB_REVALIDATE_SECONDS },
 		});
 
 		if (!response.ok) return getRepositorySnapshot(startDate, endDate);
@@ -320,7 +317,6 @@ async function getRecentCommits(repositories: RepositoryContribution[]) {
 					"User-Agent": "cueva.io",
 					"X-GitHub-Api-Version": "2022-11-28",
 				},
-				next: { revalidate: GITHUB_REVALIDATE_SECONDS },
 			});
 
 			if (!response.ok) return [];

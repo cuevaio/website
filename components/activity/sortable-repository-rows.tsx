@@ -105,7 +105,7 @@ export function SortableRepositoryRows({
 	weekKeys: string[];
 	maxCount: number;
 }) {
-	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 	const [ready, setReady] = useState(false);
 
 	useEffect(() => {
@@ -113,7 +113,7 @@ export function SortableRepositoryRows({
 			const stored = window.localStorage.getItem(SORT_STORAGE_KEY);
 			if (stored === "asc" || stored === "desc") setSortDirection(stored);
 		} catch {
-			// Storage is optional; the chronological default remains usable.
+			// Storage is optional; the recent-first default remains usable.
 		}
 
 		const frame = window.requestAnimationFrame(() => setReady(true));
@@ -148,9 +148,11 @@ export function SortableRepositoryRows({
 					onClick={toggleSortDirection}
 					className="atlas-sort-content interaction-control flex w-fit items-center gap-1 text-[10px] text-text-faint hover:text-text-primary"
 					data-ready={ready}
-					aria-label={`Sort ${sortDirection === "asc" ? "newest" : "oldest"} first`}
+					aria-label={`Sort ${sortDirection === "asc" ? "recent" : "oldest"} first`}
 				>
-					<span>{sortDirection === "asc" ? "Oldest" : "Newest"}</span>
+					<span>
+						{sortDirection === "asc" ? "Oldest first" : "Recent first"}
+					</span>
 					<svg
 						className="atlas-sort-arrow size-3"
 						data-direction={sortDirection}

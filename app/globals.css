@@ -307,7 +307,7 @@
 	transition: transform var(--interaction-duration) var(--interaction-ease);
 }
 
-.atlas-sort-arrow[data-direction="asc"] {
+.atlas-sort-arrow[data-direction="desc"] {
 	transform: rotate(180deg);
 }
 

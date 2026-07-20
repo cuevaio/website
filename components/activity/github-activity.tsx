@@ -7,7 +7,7 @@ import { SortableRepositoryRows } from "@/components/activity/sortable-repositor
 import type {
 	ContributionDay,
 	GitHubActivityData,
-	RecentCommit,
+	RecentContribution,
 	RepositoryContribution,
 } from "@/lib/github";
 
@@ -21,7 +21,14 @@ const intensityClassNames = [
 	"bg-text-primary",
 ];
 
-type RepositoryWeek = { key: string; count: number };
+type RepositoryWeek = {
+	key: string;
+	count: number;
+	commits: number;
+	issues: number;
+	pullRequests: number;
+	reviews: number;
+};
 type AtlasRepository = RepositoryContribution & {
 	periods: RepositoryWeek[];
 	activeWeeks: number;
@@ -54,7 +61,7 @@ function formatMonth(key: string, includeYear = false) {
 	}).format(new Date(`${key}-01T00:00:00Z`));
 }
 
-function formatCommitDate(date: string, includeYear = false) {
+function formatContributionDate(date: string, includeYear = false) {
 	return `${new Intl.DateTimeFormat("en", {
 		month: "short",
 		day: "numeric",
@@ -71,9 +78,12 @@ function buildContributionGraph(
 	endDate: string,
 ) {
 	const start = new Date(`${startDate}T00:00:00Z`);
+	const end = new Date(`${endDate}T00:00:00Z`);
 	const byDate = new Map(days.map((day) => [day.date, day]));
 	const leadingCells = start.getUTCDay();
-	const dateCells = Array.from({ length: 365 }, (_, index) => {
+	const dayCount =
+		Math.round((end.getTime() - start.getTime()) / 86_400_000) + 1;
+	const dateCells = Array.from({ length: dayCount }, (_, index) => {
 		const date = toDateString(addUtcDays(start, index));
 		return { date, day: byDate.get(date) ?? null };
 	});
@@ -131,13 +141,18 @@ function buildAtlasRepositories(
 ) {
 	return repositories
 		.map((repository): AtlasRepository => {
-			const counts = new Map(
-				repository.weeks.map((week) => [week.date, week.count]),
-			);
-			const periods = weekKeys.map((key) => ({
-				key,
-				count: counts.get(key) ?? 0,
-			}));
+			const counts = new Map(repository.weeks.map((week) => [week.date, week]));
+			const periods = weekKeys.map((key) => {
+				const week = counts.get(key);
+				return {
+					key,
+					count: week?.count ?? 0,
+					commits: week?.commits ?? 0,
+					issues: week?.issues ?? 0,
+					pullRequests: week?.pullRequests ?? 0,
+					reviews: week?.reviews ?? 0,
+				};
+			});
 
 			return {
 				...repository,
@@ -153,8 +168,25 @@ function buildAtlasRepositories(
 		);
 }
 
-function ActiveNow({ recentCommits }: { recentCommits: RecentCommit[] }) {
-	if (recentCommits.length === 0) return null;
+function formatContributionReference(contribution: RecentContribution) {
+	switch (contribution.kind) {
+		case "commit":
+			return `Commit ${contribution.reference}`;
+		case "issue":
+			return `Issue ${contribution.reference}`;
+		case "pull-request":
+			return `Pull request ${contribution.reference}`;
+		case "review":
+			return `Code review on ${contribution.reference}`;
+	}
+}
+
+function ActiveNow({
+	recentContributions,
+}: {
+	recentContributions: RecentContribution[];
+}) {
+	if (recentContributions.length === 0) return null;
 
 	return (
 		<section
@@ -165,39 +197,41 @@ function ActiveNow({ recentCommits }: { recentCommits: RecentCommit[] }) {
 				Active now
 			</h2>
 			<p className="mt-1 text-[13px] text-text-faint">
-				My latest 20 commits across public repositories.
+				My latest 20 contributions across public repositories.
 			</p>
 			<ul className="mt-4 space-y-0.5">
-				{recentCommits.map((commit) => (
-					<li key={`${commit.repository}-${commit.sha}`}>
+				{recentContributions.map((contribution) => (
+					<li
+						key={`${contribution.kind}-${contribution.repository}-${contribution.id}`}
+					>
 						<a
-							href={commit.href}
+							href={contribution.href}
 							target="_blank"
 							rel="noopener noreferrer"
 							className="activity-row commit-metadata link-with-arrow interaction-surface group block min-w-0 py-2"
 						>
 							<span className="flex items-baseline justify-between gap-4 text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
 								<span className="min-w-0 truncate" translate="no">
-									<RepositoryName name={commit.repository} />
+									<RepositoryName name={contribution.repository} />
 								</span>
 								<span>
-									<RelativeDate date={commit.committedAt} />
+									<RelativeDate date={contribution.occurredAt} />
 								</span>
 							</span>
 							<span className="mt-1 flex min-w-0 items-center gap-1.5">
 								<span className="min-w-0 break-words text-[12px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
-									{commit.message}
+									{contribution.title}
 								</span>
 								<ExternalLinkIcon />
 							</span>
 							<span className="mt-0.5 block text-[10px] text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
 								<span className="commit-metadata-id">
-									{commit.sha.slice(0, 7)}
+									{formatContributionReference(contribution)}
 								</span>
 								<span className="commit-metadata-separator"> · </span>
 								<LocalDate
-									date={commit.committedAt}
-									fallback={formatCommitDate(commit.committedAt)}
+									date={contribution.occurredAt}
+									fallback={formatContributionDate(contribution.occurredAt)}
 								/>
 							</span>
 						</a>
@@ -245,11 +279,11 @@ function RepositoryAtlas({
 				<div className="flex flex-wrap items-end justify-between gap-3">
 					<div>
 						<h2 id="repository-atlas" className="text-[15px] text-text-primary">
-							Public commits by repository
+							Public contributions by repository
 						</h2>
 						<p className="mt-1 text-[13px] text-text-faint">
-							Activity moves between repositories in distinct weekly bursts,
-							with inactive gaps left visible.
+							Commits, issues, pull requests, and reviews grouped into weekly
+							bursts.
 						</p>
 					</div>
 					<p className="text-[11px] text-text-faint">
@@ -259,7 +293,7 @@ function RepositoryAtlas({
 				</div>
 
 				<p className="sr-only">
-					Weekly public repository commits from{" "}
+					Weekly public repository contributions from{" "}
 					{formatMonth(recentCutoff.slice(0, 7), true)} to{" "}
 					{formatMonth(endDate.slice(0, 7), true)}. Select a repository to open
 					it on GitHub.
@@ -285,6 +319,13 @@ export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 			(maximum, day) => Math.max(maximum, day.count),
 			0,
 		) ?? 0;
+	const contributionGraph = contributions
+		? buildContributionGraph(
+				contributions.days,
+				contributions.startDate,
+				contributions.endDate,
+			)
+		: [];
 
 	return (
 		<div>
@@ -307,14 +348,12 @@ export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 					<div className="mt-5 w-full">
 						<ol
 							className="grid w-full list-none grid-flow-col grid-rows-7 gap-[2px] sm:gap-[3px]"
-							style={{ gridTemplateColumns: "repeat(53, minmax(0, 1fr))" }}
+							style={{
+								gridTemplateColumns: `repeat(${contributionGraph.length / 7}, minmax(0, 1fr))`,
+							}}
 							aria-label={`GitHub contribution graph from ${formatLongDate(contributions.startDate)} to ${formatLongDate(contributions.endDate)}`}
 						>
-							{buildContributionGraph(
-								contributions.days,
-								contributions.startDate,
-								contributions.endDate,
-							).map((cell) => {
+							{contributionGraph.map((cell) => {
 								if (!cell.date)
 									return (
 										<li
@@ -349,7 +388,7 @@ export function GitHubActivity({ activity }: { activity: GitHubActivityData }) {
 				</p>
 			)}
 
-			<ActiveNow recentCommits={activity.recentCommits} />
+			<ActiveNow recentContributions={activity.recentContributions} />
 			<RepositoryAtlas repositories={activity.repositories} endDate={endDate} />
 		</div>
 	);

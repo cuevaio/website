@@ -17,7 +17,14 @@ const intensityClassNames = [
 ];
 
 type AtlasRepository = RepositoryContribution & {
-	periods: Array<{ key: string; count: number }>;
+	periods: Array<{
+		key: string;
+		count: number;
+		commits: number;
+		issues: number;
+		pullRequests: number;
+		reviews: number;
+	}>;
 	activeWeeks: number;
 };
 
@@ -56,6 +63,18 @@ function formatLastActive(repository: RepositoryContribution) {
 
 function formatCount(count: number) {
 	return new Intl.NumberFormat("en-US").format(count);
+}
+
+function formatContributionBreakdown(week: AtlasRepository["periods"][number]) {
+	return [
+		{ count: week.commits, label: "commit" },
+		{ count: week.issues, label: "issue" },
+		{ count: week.pullRequests, label: "pull request" },
+		{ count: week.reviews, label: "review" },
+	]
+		.filter(({ count }) => count > 0)
+		.map(({ count, label }) => `${count} ${label}${count === 1 ? "" : "s"}`)
+		.join(", ");
 }
 
 function getIntensityLevel(count: number, maxCount: number) {
@@ -185,18 +204,21 @@ export function SortableRepositoryRows({
 							target="_blank"
 							rel="noopener noreferrer"
 							className="activity-row link-with-arrow interaction-surface atlas-grid group min-h-10 items-center py-2"
-							aria-label={`${repository.name}, ${formatCount(visibleTotal)} commits across ${repository.activeWeeks} active ${repository.activeWeeks === 1 ? "week" : "weeks"}, ${repository.periods
+							aria-label={`${repository.name}, ${formatCount(visibleTotal)} contributions across ${repository.activeWeeks} active ${repository.activeWeeks === 1 ? "week" : "weeks"}, ${repository.periods
 								.filter((week) => week.count > 0)
 								.map(
 									(week) =>
-										`Week of ${formatWeek(week.key)}: ${formatCount(week.count)}`,
+										`Week of ${formatWeek(week.key)}: ${formatContributionBreakdown(week)}`,
 								)
 								.join(", ")}, last active ${formatLastActive(repository)}`}
 						>
 							<RepositoryLabel name={repository.name} />
 							{repository.periods.map((week) => {
 								const level = getIntensityLevel(week.count, maxCount);
-								const label = `${week.count} ${week.count === 1 ? "commit" : "commits"} in ${repository.name} during the week of ${formatWeek(week.key)}`;
+								const label =
+									week.count === 0
+										? `No contributions in ${repository.name} during the week of ${formatWeek(week.key)}`
+										: `${week.count} ${week.count === 1 ? "contribution" : "contributions"} (${formatContributionBreakdown(week)}) in ${repository.name} during the week of ${formatWeek(week.key)}`;
 								return (
 									<span
 										key={week.key}
@@ -216,7 +238,7 @@ export function SortableRepositoryRows({
 			</div>
 
 			<div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[10px] text-text-faint">
-				<span>Commits, grouped by week.</span>
+				<span>All contributions, grouped by week.</span>
 				<span className="flex items-center gap-1.5">
 					<span>None</span>
 					<span

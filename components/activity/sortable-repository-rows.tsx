@@ -146,26 +146,13 @@ export function SortableRepositoryRows({
 				<button
 					type="button"
 					onClick={toggleSortDirection}
-					className="atlas-sort-content interaction-control flex w-fit items-center gap-1 text-[10px] text-text-faint hover:text-text-primary"
+					className="atlas-sort-content interaction-control w-fit text-[10px] text-text-faint hover:text-text-primary"
 					data-ready={ready}
 					aria-label={`Sort ${sortDirection === "asc" ? "recent" : "oldest"} first`}
 				>
 					<span>
 						{sortDirection === "asc" ? "Oldest first" : "Recent first"}
 					</span>
-					<svg
-						className="atlas-sort-arrow size-3"
-						data-direction={sortDirection}
-						viewBox="0 0 12 12"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="1.25"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						aria-hidden="true"
-					>
-						<path d="M6 2.5v7M3.5 7 6 9.5 8.5 7" />
-					</svg>
 				</button>
 				{weekKeys.map((key, index) => {
 					const month = key.slice(0, 7);

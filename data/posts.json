@@ -1,5 +1,11 @@
 [
 	{
+		"date": "2026-07-25",
+		"title": "Building a Claude Code clone",
+		"link": "https://youtu.be/w5uQfS1D5cs",
+		"description": "I built Cave Code, a minimal coding agent with a ten-word system prompt and a small set of file tools. A practical look at why smarter models need clearer, simpler instructions and more trust rather than increasingly complex harnesses."
+	},
+	{
 		"date": "2026-07-21",
 		"title": "Vibe Coding Workshop: Prototype Products with Maca.sh",
 		"link": "https://youtu.be/PeTxz3tpqos",

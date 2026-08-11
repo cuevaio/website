@@ -6,6 +6,12 @@ type PostGroup = {
 	items: PostListItem[];
 };
 
+const postDateFormatter = new Intl.DateTimeFormat("en", {
+	month: "short",
+	day: "numeric",
+	timeZone: "UTC",
+});
+
 function isInternalLink(link: string) {
 	return link.startsWith("/");
 }
@@ -25,9 +31,17 @@ function PostLink({ post }: { post: PostListItem }) {
 				rel={internal ? undefined : "noopener noreferrer"}
 				className="link-with-arrow interaction-surface group block py-2"
 			>
-				<span className="flex items-center gap-1.5 text-[15px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
-					{post.title}
-					<ExternalLinkIcon />
+				<span className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
+					<span className="flex min-w-0 items-center gap-1.5 text-[15px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
+						{post.title}
+						<ExternalLinkIcon />
+					</span>
+					<time
+						dateTime={post.date}
+						className="text-[11px] leading-5 tabular-nums text-text-faint"
+					>
+						{postDateFormatter.format(new Date(post.date))}
+					</time>
 				</span>
 				<span className="mt-0.5 block text-[12px] leading-5 text-text-faint opacity-70 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
 					{post.description ?? "Published on Substack"}

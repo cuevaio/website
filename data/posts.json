@@ -1,13 +1,25 @@
 [
 	{
+		"date": "2026-08-29",
+		"title": "The Next Craft",
+		"link": "https://thenextcraft.org/",
+		"description": "A 12-hour in-person hackathon by Crafter Station and Next, bringing 300 builders together across Lima, Bogota, Guatemala, Arequipa, and El Salvador to ship real products."
+	},
+	{
 		"date": "2026-08-07",
 		"title": "Build4Latam",
 		"link": "https://build4latam.com/",
 		"description": "An open network of tools, builders, and resources responding to emergencies across Latin America, growing the Build4Venezuela initiative into a regional platform."
 	},
 	{
+		"date": "2026-08-07",
+		"title": "The Realtime Hackathon",
+		"link": "https://hack.useportal.co/",
+		"description": "A 39-hour online hackathon by Portal and Crafter Station for builders creating multiplayer, live-streaming, real-time location, and agentic AI products."
+	},
+	{
 		"date": "2026-08-06",
-		"title": "Estoy construyendo un MCP de WhatsApp!",
+		"title": "I'm building a WhatsApp MCP!",
 		"link": "https://www.linkedin.com/posts/cuevaio_estoy-construyendo-un-mcp-de-whatsapp-quieres-ugcPost-7491029809217855489-Fm4Q/",
 		"description": "The launch post for Normal, a way to use WhatsApp as a source of information inside ChatGPT and Claude."
 	},

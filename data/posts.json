@@ -1,5 +1,17 @@
 [
 	{
+		"date": "2026-08-07",
+		"title": "Build4Latam",
+		"link": "https://build4latam.com/",
+		"description": "An open network of tools, builders, and resources responding to emergencies across Latin America, growing the Build4Venezuela initiative into a regional platform."
+	},
+	{
+		"date": "2026-08-06",
+		"title": "Estoy construyendo un MCP de WhatsApp!",
+		"link": "https://www.linkedin.com/posts/cuevaio_estoy-construyendo-un-mcp-de-whatsapp-quieres-ugcPost-7491029809217855489-Fm4Q/",
+		"description": "The launch post for Normal, a way to use WhatsApp as a source of information inside ChatGPT and Claude."
+	},
+	{
 		"date": "2026-07-25",
 		"title": "Building a Claude Code clone",
 		"link": "https://youtu.be/w5uQfS1D5cs",
@@ -62,8 +74,8 @@
 	{
 		"date": "2026-06-15",
 		"title": "Normal",
-		"link": "https://github.com/cuevaio/normal",
-		"description": "A WhatsApp workflow product for teams that need versioned automations, durable runs, and a clear audit trail. Currently under active development."
+		"link": "https://normal.fast/",
+		"description": "Bring WhatsApp into ChatGPT and Claude to search conversations, summarize busy groups, find forgotten details, and draft replies with explicit permissions."
 	},
 	{
 		"date": "2025-09-16",

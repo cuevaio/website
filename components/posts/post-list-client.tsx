@@ -20,16 +20,48 @@ function getPostId(post: PostListItem) {
 	return `${post.source}-${post.dateValue}-${post.link}`;
 }
 
-function PostLink({ post }: { post: PostListItem }) {
+function getPostAnchorIds(groups: PostGroup[]) {
+	const anchorCounts = new Map<string, number>();
+	const anchorIds = new Map<string, string>();
+
+	for (const post of groups.flatMap((group) => group.items)) {
+		const baseAnchorId =
+			post.title
+				.normalize("NFKD")
+				.replace(/[\u0300-\u036f]/g, "")
+				.toLowerCase()
+				.replace(/['’]/g, "")
+				.replace(/[^a-z0-9]+/g, "-")
+				.replace(/^-|-$/g, "") || "post";
+		const count = (anchorCounts.get(baseAnchorId) ?? 0) + 1;
+
+		anchorCounts.set(baseAnchorId, count);
+		anchorIds.set(
+			getPostId(post),
+			count === 1 ? baseAnchorId : `${baseAnchorId}-${count}`,
+		);
+	}
+
+	return anchorIds;
+}
+
+function PostLink({
+	post,
+	anchorId,
+}: {
+	post: PostListItem;
+	anchorId: string;
+}) {
 	const internal = isInternalLink(post.link);
 
 	return (
 		<li>
 			<a
+				id={anchorId}
 				href={post.link}
 				target={internal ? undefined : "_blank"}
 				rel={internal ? undefined : "noopener noreferrer"}
-				className="link-with-arrow interaction-surface group block py-2"
+				className="link-with-arrow interaction-surface group block scroll-mt-6 py-2"
 			>
 				<span className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
 					<span className="flex min-w-0 items-center gap-1.5 text-[15px] text-text-muted transition-colors group-hover:text-text-primary group-focus-visible:text-text-primary">
@@ -52,6 +84,8 @@ function PostLink({ post }: { post: PostListItem }) {
 }
 
 export function PostListClient({ groups }: { groups: PostGroup[] }) {
+	const anchorIds = getPostAnchorIds(groups);
+
 	return (
 		<div className="post-list-reveal space-y-9">
 			{groups.map((group) => (
@@ -64,7 +98,11 @@ export function PostListClient({ groups }: { groups: PostGroup[] }) {
 					</h2>
 					<ul className="space-y-1">
 						{group.items.map((post) => (
-							<PostLink key={getPostId(post)} post={post} />
+							<PostLink
+								key={getPostId(post)}
+								post={post}
+								anchorId={anchorIds.get(getPostId(post)) ?? "post"}
+							/>
 						))}
 					</ul>
 				</section>

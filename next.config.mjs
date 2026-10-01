@@ -15,6 +15,11 @@ const nextConfig = {
 				destination: "https://testflight.apple.com/join/EhmQk8U8",
 				permanent: false,
 			},
+			{
+				source: "/vibes",
+				destination: "https://luma.com/9bhi5hzi",
+				permanent: false,
+			},
 		];
 	},
 	typescript: {
